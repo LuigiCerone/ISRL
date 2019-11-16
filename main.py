@@ -1,14 +1,18 @@
 import rospy
 from sensor_msgs.msg import LaserScan
+import prothonics
 
 def main():
+
+    # Setup prothonics.
+    blindRobot = prothonics.Prothonics(100, 100)
+    blindRobot.useBrain().useLearning().learnKnoledgeBaseFromFile("behaviour.pl")
+
+    # Create a node.
     rospy.init_node('laser_data')
-    sub = rospy.Subscriber('scan', LaserScan, read_scan)
+    sub = rospy.Subscriber('scan', LaserScan, callback=blindRobot.useSense)
 
     rospy.spin()
-
-def read_scan(msg):
-    print(msg.ranges[0])
 
 
 if __name__ == '__main__':
