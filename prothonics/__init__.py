@@ -35,10 +35,8 @@ class Prothonics:
     
     def useSense(self, msg):
         print(msg.ranges[0])
-        # Queste linee le ho commentate dopo aver chiuso tutto, ma penso funzioni comunque
-        #return self.read_scan
+        return self.read_scan
         
-
-    #def read_scan(msg):
-        #print(msg.ranges[0])
+    def read_scan(self, msg):
+        print(msg.ranges[0])
     

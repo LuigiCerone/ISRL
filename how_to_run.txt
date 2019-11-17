@@ -2,4 +2,3 @@ roscore
 roslaunch turtlebot3_gazebo turtlebot3_world.launch
 roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=gmapping
 roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
-export TURTLEBOT3_MODEL=burger
