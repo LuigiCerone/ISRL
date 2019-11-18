@@ -38,5 +38,8 @@ class Prothonics:
         return self.read_scan
         
     def read_scan(self, msg):
-        print(msg.ranges[0])
-    
+        print(round(msg.ranges[0],2))
+        print(round(msg.ranges[359],2))
+        print(round(msg.ranges[1],2))
+
+
