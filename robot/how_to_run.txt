@@ -12,3 +12,11 @@ while(True):
         theta_rads = math.atan2(y, x)
         theta_degs = theta_rads * 180 / math.pi
         break
+
+
+Per runnare il pkg
+roscore
+roslaunch turtlebot3_gazebo turtlebot3_world.launch
+roslaunch robot robot.launch
+
+Se quest'ultimo comando fallisce allora eseguire prima source ~/catkin_ws/develop/setup.sh
