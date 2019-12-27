@@ -3,12 +3,12 @@ from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 import math
 import tf
-import numpy as np
 from geometry_msgs.msg import Quaternion
 from sensor_msgs.msg import LaserScan
 import prothonics
 
-class Robot():
+
+class Robot:
     def __init__(self):
         rospy.init_node('robot', anonymous=True)
 
