@@ -144,7 +144,7 @@ class MotorDriver(object):
         :return:
         """
         if wheel_turn_radius is not None:
-            # The robot is turning
+            # The controller is turning
             wheel_rpm = (angular_speed * wheel_turn_radius) / self._wheel_radius
         else:
             # Its not turning therefore the wheel speed is the same as the body

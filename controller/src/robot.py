@@ -10,7 +10,7 @@ import prothonics
 
 class Robot:
     def __init__(self):
-        rospy.init_node('robot', anonymous=True)
+        rospy.init_node('controller', anonymous=True)
 
         self.home_x = None
         self.home_y = None
@@ -171,7 +171,7 @@ class Robot:
         self.move_to(self.home_x, self.home_y)
         print('returned home - x: {}, y: {}'.format(round(self.odometry.pose.pose.position.x,5), round(self.odometry.pose.pose.position.y,5)))
         #view = self.sense()
-        #rospy.loginfo("Current view for the robot is: '{0}', '{1}', '{2}', '{3}'.".format(view[0], view[1], view[2],
+        #rospy.loginfo("Current view for the controller is: '{0}', '{1}', '{2}', '{3}'.".format(view[0], view[1], view[2],
                                                                                              #view[3]))
 
         #direction = self.think(view)
