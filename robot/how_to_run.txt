@@ -1,0 +1,22 @@
+roscore
+roslaunch turtlebot3_gazebo turtlebot3_world.launch
+roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=gmapping
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+while(True):
+    if(quaternion_0 != (0, 0, 0, 0)):
+        m = tf.transformations.quaternion_matrix([quaternion_0.x, quaternion_0.y, \
+             quaternion_0.z, quaternion_0.w])
+        x = m[0, 0]
+        y = m[1, 0]
+        theta_rads = math.atan2(y, x)
+        theta_degs = theta_rads * 180 / math.pi
+        break
+
+
+Per runnare il pkg
+roscore
+roslaunch turtlebot3_gazebo turtlebot3_world.launch
+roslaunch robot robot.launch
+
+Se quest'ultimo comando fallisce allora eseguire prima source ~/catkin_ws/develop/setup.sh
