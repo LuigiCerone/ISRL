@@ -11,6 +11,8 @@
     <arg name="configuration_basename" default="turtlebot3_lds_2d.lua"/>
     <arg name="set_odom_frame" default="/odom"/>
     <arg name="set_map_frame" default="/map"/>
+    <arg name="cmd_vel_topic" default="/cmd_vel" />
+     <arg name="move_forward_only" default="false"/>
 
     <node pkg="gmapping" type="slam_gmapping" name="mio_robot_slam_gmapping" output="screen">
         <param name="base_frame" value="$(arg set_base_frame)"/>
@@ -46,6 +48,20 @@
         <param name="lasamplerange" value="0.005"/>
         <param name="lasamplestep" value="0.005"/>
     </node>
+
+    <!-- move_base -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+    <rosparam file="$(find mio_robot)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find mio_robot)/param/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find mio_robot)/param/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find mio_robot)/param/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find mio_robot)/param/move_base_params.yaml" command="load" />
+    <rosparam file="$(find mio_robot)/param/dwa_local_planner_params.yaml" command="load" />
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+    <remap from="odom" to="$(arg set_odom_frame)"/>
+    <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />
+  </node>
 
       <!-- rviz -->
   <group if="$(arg open_rviz)">
