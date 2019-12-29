@@ -4,6 +4,7 @@
     <gazebo>
         <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
             <alwaysOn>false</alwaysOn>
+            <broadcastTF>true</broadcastTF>
             <legacyMode>false</legacyMode>
             <updateRate>20</updateRate>
             <leftJoint>left_wheel_joint</leftJoint>
@@ -30,8 +31,8 @@
                     <horizontal>
                         <samples>360</samples>
                         <resolution>1</resolution>
-                        <min_angle>0.0</min_angle>
-                        <max_angle>6.28319</max_angle>
+                        <min_angle>0</min_angle>
+                        <max_angle>6.28</max_angle>
                     </horizontal>
                 </scan>
                 <range>
