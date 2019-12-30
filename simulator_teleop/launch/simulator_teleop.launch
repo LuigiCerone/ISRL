@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="simulator_teleop" type="simulator_teleop" name="simulator_teleop"  output="screen">
+  </node>
+</launch>

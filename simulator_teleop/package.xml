@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>simulator_teleop</name>
+  <version>1.2.1</version>
+  <description>
+    Provides teleoperation using keyboard for raspberry_car.
+  </description>
+  <license>BSD</license>
+  <author>Luigi</author>
+  <author email="pyo@todo.com">todo</author>
+  <maintainer email="pyo@todo.com">todo</maintainer>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>rospy</depend>
+  <depend>geometry_msgs</depend>
+</package>
