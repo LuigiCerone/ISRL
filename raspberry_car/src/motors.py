@@ -80,10 +80,12 @@ class Driver:
 
     def right_wheel_velocity_callback(self, message_speed):
         self._right_speed_percent = (100 * message_speed.data/self._max_speed)
-        rospy.loginfo("right wheel, ho ricevuto dal topic {}, andro a {}.".format(message_speed.data, self._right_speed_percent))
+        self._right_motor.move(self._right_speed_percent)
+        # rospy.loginfo("right wheel, ho ricevuto dal topic {}, andro a {}.".format(message_speed.data, self._right_speed_percent))
 
     def left_wheel_velocity_callback(self, message_speed):
         self._left_speed_percent = (100 * message_speed.data/self._max_speed)
+        self._left_motor.move(self._left_speed_percent)
 
     def run(self):
         """The control loop of the driver."""
@@ -95,12 +97,16 @@ class Driver:
             self._right_motor.move(self._right_speed_percent)
             rate.sleep()
 
+    def run1(self):
+        """The control loop of the driver."""
+        rospy.spin()
+
 
 def main():
     driver = Driver()
 
     # Run driver. This will block
-    driver.run()
+    driver.run1()
 
 
 if __name__ == '__main__':
