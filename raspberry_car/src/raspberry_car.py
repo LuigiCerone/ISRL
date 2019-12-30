@@ -30,9 +30,9 @@ class Car:
         elif direction == 'south':
             self.move_backward()
         elif direction == 'west':
-            pass
+            self.turn_left()
         elif direction == 'east':
-            pass
+            self.turn_right()
         elif direction == 'stop':
             self.stop()
         else:
@@ -41,26 +41,32 @@ class Car:
     def move_forward(self):
         self.left_motor.move_forward()
         self.right_motor.move_forward()
-
-        sleep(1)
-        # self.stop()
+        # sleep(1)
 
     def move_backward(self):
         self.left_motor.move_backward()
         self.right_motor.move_backward()
-        sleep(1)
-
-        # self.stop()
+        # sleep(1)
 
     def stop(self):
         self.left_motor.stop()
         self.right_motor.stop()
-        GPIO.cleanup()
+
+    def turn_right(self):
+        self.left_motor.move_forward()
+        self.right_motor.move_backward()
+        sleep(0.08)
+        self.stop()
+
+    def turn_left(self):
+        self.left_motor.move_backward()
+        self.right_motor.move_forward()
+        sleep(0.08)
+        self.stop()
 
 
 class Motor:
     def __init__(self, enable_pin, motor_pin_1, motor_pin_2, side):
-        GPIO.setmode(GPIO.BCM)
 
         GPIO.setup(enable_pin, GPIO.OUT)
         GPIO.setup(motor_pin_1, GPIO.OUT)
@@ -95,4 +101,6 @@ class Motor:
 if __name__ == "__main__":
     car = Car()
     rospy.spin()
+    GPIO.cleanup()
+
 
