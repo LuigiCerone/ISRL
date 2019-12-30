@@ -1,46 +1,67 @@
+#!/usr/bin/env python
+
 import rospy
-from geometry_msgs.msg import Twist
+from std_msgs.msg import String
 
 import RPi.GPIO as GPIO
 from time import sleep
 
+# Set the GPIO modes
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 
 class Car:
     def __init__(self):
         rospy.init_node('raspberry_car', anonymous=True)
 
-        rospy.Subscriber('/cmd_vel', Twist, self.cmd_vel_callback)
+        rospy.Subscriber('/direction', String, self.direction_callback)
 
-        # Car setup.
-        GPIO.setmode(GPIO.BOARD)
+        # enable_pin, motor_pin_1, motor_pin_2, side.
+        self.left_motor = Motor(26, 13, 21, "left")
+        self.right_motor = Motor(12, 6, 20, "right")
 
-        # enable_pin, motor_pin_1, motor_pin_2.
-        self.left_motor = Motor(22, 16, 18)
-        self.right_motor = Motor(11, 15, 13)
+    def direction_callback(self, msg):
+        rospy.loginfo("Just received: {}".format(msg.data))
+        self.act(msg.data)
 
-
-    def cmd_vel_callback(self, cmd_vel):
-        rospy.loginfo("Just received: {}".format(cmd_vel))
+    def act(self, direction):
+        if direction == 'north':
+            self.move_forward()
+        elif direction == 'south':
+            self.move_backward()
+        elif direction == 'west':
+            pass
+        elif direction == 'east':
+            pass
+        elif direction == 'stop':
+            self.stop()
+        else:
+            print('Case not considered: {}'.format(direction))
 
     def move_forward(self):
         self.left_motor.move_forward()
         self.right_motor.move_forward()
-        self.stop()
 
-    def move_backword(self):
-        self.left_motor.move_backword()
-        self.right_motor.move_backword()
-        self.stop()
+        sleep(1)
+        # self.stop()
+
+    def move_backward(self):
+        self.left_motor.move_backward()
+        self.right_motor.move_backward()
+        sleep(1)
+
+        # self.stop()
 
     def stop(self):
         self.left_motor.stop()
         self.right_motor.stop()
-
         GPIO.cleanup()
 
 
 class Motor:
-    def __init__(self, enable_pin, motor_pin_1, motor_pin_2):
+    def __init__(self, enable_pin, motor_pin_1, motor_pin_2, side):
+        GPIO.setmode(GPIO.BCM)
+
         GPIO.setup(enable_pin, GPIO.OUT)
         GPIO.setup(motor_pin_1, GPIO.OUT)
         GPIO.setup(motor_pin_2, GPIO.OUT)
@@ -48,25 +69,26 @@ class Motor:
         self.enable_pin = enable_pin
         self.motor_pin_1 = motor_pin_1
         self.motor_pin_2 = motor_pin_2
+        self.side = side
 
-    def move_forward(self, secs=3):
-        rospy.loginfo("FORWARD MOTION")
-        GPIO.output(self.motor_pin_1, GPIO.LOW)
-        GPIO.output(self.motor_pin_2, GPIO.HIGH)
-        GPIO.output(self.enable_pin, GPIO.HIGH)
-
-        sleep(secs)
-
-    def move_backword(self, secs=3):
-        rospy.loginfo("BACKWARD MOTION")
+    def move_forward(self, secs=1):
+        rospy.loginfo("Motor {}: forward motion.".format(self.side))
         GPIO.output(self.motor_pin_1, GPIO.HIGH)
         GPIO.output(self.motor_pin_2, GPIO.LOW)
         GPIO.output(self.enable_pin, GPIO.HIGH)
 
-        sleep(secs)
+        # sleep(secs)
+
+    def move_backward(self, secs=1):
+        rospy.loginfo("Motor {}: backward motion.".format(self.side))
+        GPIO.output(self.motor_pin_1, GPIO.LOW)
+        GPIO.output(self.motor_pin_2, GPIO.HIGH)
+        GPIO.output(self.enable_pin, GPIO.HIGH)
+
+        # sleep(secs)
 
     def stop(self):
-        rospy.loginfo("STOP")
+        rospy.loginfo("Motor {} : stop.".format(self.side))
         GPIO.output(self.enable_pin, GPIO.LOW)
 
 

@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .idea
 .vscode
+raspberry_car_teleop
 
 # C extensions
 *.so

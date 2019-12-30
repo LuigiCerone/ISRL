@@ -3,7 +3,7 @@ import rospy
 import sys
 from geometry_msgs.msg import Twist
 
-from raspberry_car.src.motor_driver import MotorDriver
+from motor_driver import MotorDriver
 
 
 class Car(object):

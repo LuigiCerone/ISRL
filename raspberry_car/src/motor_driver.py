@@ -3,7 +3,6 @@ import rospy
 import RPi.GPIO as GPIO
 import time
 
-
 class MotorDriver(object):
 
     def __init__(self, wheel_distance=0.098, wheel_diameter=0.066, i_BASE_PWM=50, i_MULTIPLIER_STANDARD=0.1,
@@ -14,13 +13,14 @@ class MotorDriver(object):
         :param wheel_distance: Distance Between wheels in meters
         :param wheel_diameter: Diameter of the wheels in meters
         """
-        self.PIN = 18 #36(?)
-        self.PWMA1 = 6 #15
-        self.PWMA2 = 13 #16
-        self.PWMB1 = 20 #13
-        self.PWMB2 = 21 #18
-        self.D1 = 12 #11
-        self.D2 = 26 #22
+        # Miei Suoi
+        self.PIN = 18 #36(?) 18
+        self.PWMA1 = 6 #15 6
+        self.PWMA2 = 13 #16 13
+        self.PWMB1 = 20 #13 20
+        self.PWMB2 = 21 #18 21
+        self.D1 = 12 #11 12
+        self.D2 = 26 #22 26
 
         self.PWM1 = 0
         self.PWM2 = 0
