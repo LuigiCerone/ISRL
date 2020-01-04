@@ -1,0 +1,9 @@
+<launch>
+     <node name="controller"
+          pkg="controller"
+          type="robot.py"
+          respawn="false"
+          output="screen">
+          <param name="prolog" value="$(find controller)/src/behaviour.pl"/>
+     </node>
+</launch>

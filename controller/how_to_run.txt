@@ -1,0 +1,18 @@
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+
+Per eseguire con il simulatore:
+roscore
+roslaunch mio_robot mio_robot_world_gazebo.launch
+roslaunch mio_robot mio_robot_simulator_rviz.launch
+roslaunch controller controller.launch
+
+Per eseguire con il robot fisico
+roscore
+export ROS_MASTER_URI=http://IP_LAPTOP:1311
+
+ssh pi@IP_RASPBERRY
+export ROS_MASTER_URI=http://IP_LAPTOP:1311
+
+roslaunch raspberry_car raspberry_car.launch

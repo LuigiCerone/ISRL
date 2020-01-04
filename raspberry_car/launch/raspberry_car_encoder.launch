@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+   <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py"
+          output="screen"/>
+
+   <node name="raspberry_car"
+          pkg="raspberry_car"
+          type="encoders.py"
+          respawn="false"
+          output="screen">
+    </node>
+</launch>
