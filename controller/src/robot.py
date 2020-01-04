@@ -87,8 +87,9 @@ class Robot:
 
         starting_rad = round(self.useQuaternion() % 360, 5)
 
-        while abs(starting_rad + abs(degree) - abs(round(self.useQuaternion() % 360, 5))) > 0.05:
-            print(abs(starting_rad + abs(degree) - round(self.useQuaternion() % 360, 5)))
+        while abs(round((round(starting_rad + abs(degree) % 360, 5) - abs(round(self.useQuaternion() % 360, 5))) % 360, 5))\
+                > 0.05:
+            print(abs(round((round(starting_rad + abs(degree) % 360, 5) - abs(round(self.useQuaternion() % 360, 5))) % 360, 5)))
             self.velocity_publisher.publish(command)
 
         command.angular.z = 0
@@ -167,7 +168,6 @@ class Robot:
            command.linear.x = 0.5
 
         self.velocity_publisher.publish(command)
-
 
     def start(self):
         '''rospy.loginfo("Robot started...")
