@@ -87,17 +87,8 @@ class Driver:
         self._left_speed_percent = (100 * message_speed.data/self._max_speed)
         self._left_motor.move(self._left_speed_percent)
 
+
     def run(self):
-        """The control loop of the driver."""
-
-        rate = rospy.Rate(self._rate)
-
-        while not rospy.is_shutdown():
-            self._left_motor.move(self._left_speed_percent)
-            self._right_motor.move(self._right_speed_percent)
-            rate.sleep()
-
-    def run1(self):
         """The control loop of the driver."""
         rospy.spin()
 
@@ -105,8 +96,8 @@ class Driver:
 def main():
     driver = Driver()
 
-    # Run driver. This will block
-    driver.run1()
+    # Run driver.
+    driver.run()
 
 
 if __name__ == '__main__':
