@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -22,7 +24,7 @@ class Robot:
 
         # Setup prothonics.
         self.prothonics = prothonics.Prothonics(100, 100)
-        self.prothonics.useBrain().useLearning().learnKnoledgeBaseFromFile("behaviour.pl")
+        self.prothonics.useBrain().useLearning().learnKnoledgeBaseFromFile(rospy.get_param("~prolog"))
         # sub = rospy.Subscriber('scan', LaserScan, callback=blindRobot.useSense)
 
         self.quaternion = Quaternion()

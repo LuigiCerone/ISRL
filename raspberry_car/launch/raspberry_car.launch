@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-
-    <arg name="BASE_PWM" default="50"/>
-    <arg name="MULTIPLIER_STANDARD" default="0.1"/>
-    <arg name="MULTIPLIER_PIVOT" default="1.0"/>
-    <arg name="simple_mode" default="true"/>
-
     <node name="twist_to_motors" pkg="raspberry_car" type="twist_to_motors.py"
           output="screen"/>
 
@@ -14,5 +8,15 @@
           type="motors.py"
           respawn="false"
           output="screen" >
+    </node>
+
+    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py"
+          output="screen"/>
+
+   <node name="raspberry_car"
+          pkg="raspberry_car"
+          type="encoders.py"
+          respawn="false"
+          output="screen">
     </node>
 </launch>

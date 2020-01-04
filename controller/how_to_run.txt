@@ -1,22 +1,18 @@
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+
+Per eseguire con il simulatore:
 roscore
-roslaunch turtlebot3_gazebo turtlebot3_world.launch
-roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=gmapping
-roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+roslaunch mio_robot mio_robot_world_gazebo.launch
+roslaunch mio_robot mio_robot_simulator_rviz.launch
+roslaunch controller controller.launch
 
-while(True):
-    if(quaternion_0 != (0, 0, 0, 0)):
-        m = tf.transformations.quaternion_matrix([quaternion_0.x, quaternion_0.y, \
-             quaternion_0.z, quaternion_0.w])
-        x = m[0, 0]
-        y = m[1, 0]
-        theta_rads = math.atan2(y, x)
-        theta_degs = theta_rads * 180 / math.pi
-        break
-
-
-Per runnare il pkg
+Per eseguire con il robot fisico
 roscore
-roslaunch turtlebot3_gazebo turtlebot3_world.launch
-roslaunch robot robot.launch
+export ROS_MASTER_URI=http://IP_LAPTOP:1311
 
-Se quest'ultimo comando fallisce allora eseguire prima source ~/catkin_ws/develop/setup.sh
+ssh pi@IP_RASPBERRY
+export ROS_MASTER_URI=http://IP_LAPTOP:1311
+
+roslaunch raspberry_car raspberry_car.launch
