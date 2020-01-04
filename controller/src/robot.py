@@ -15,7 +15,7 @@ class Robot:
         self.home_x = None
         self.home_y = None
 
-        self.DISTANCE_THRESHOLD = 5 # what is the unit measure?
+        self.DISTANCE_THRESHOLD = 1 # what is the unit measure?
 
         # TODO Check if this is useful, in the previous hw this was used to avoid a bug with prothonics.
         self.previous_decision = None
@@ -84,8 +84,11 @@ class Robot:
     def rotate_by(self, degree, angular_velocity):
         command = Twist()
         command.angular.z = angular_velocity
-        
-        while(abs(round(self.useQuaternion() % 360, 5) - abs(degree)) > 0.05):
+
+        starting_rad = round(self.useQuaternion() % 360, 5)
+
+        while abs(starting_rad + abs(degree) - abs(round(self.useQuaternion() % 360, 5))) > 0.05:
+            print(abs(starting_rad + abs(degree) - round(self.useQuaternion() % 360, 5)))
             self.velocity_publisher.publish(command)
 
         command.angular.z = 0
@@ -106,24 +109,30 @@ class Robot:
         # TODO Once working use 8 directions with range of angles.
         # In self.laserscan we have the reading of laser sensor.
         view = dict()
-        if self.laserscan.ranges[0] <= self.DISTANCE_THRESHOLD:
+        if self.laserscan.ranges[0] >= self.DISTANCE_THRESHOLD:
             view['North'] = False # Because in prothonics logic false means there isn't an obstacle.
-
-        if self.laserscan.ranges[89] <= self.DISTANCE_THRESHOLD:
+        else:
+            view['North'] = True
+        if self.laserscan.ranges[89] >= self.DISTANCE_THRESHOLD:
             view['West'] = False
+        else:
+            view['West'] = True
         # TODO Check if 89th element is left or right?
 
-        if self.laserscan.ranges[159] <= self.DISTANCE_THRESHOLD:
+        if self.laserscan.ranges[159] >= self.DISTANCE_THRESHOLD:
             view['South'] = False
-
-        if self.laserscan.ranges[269] <= self.DISTANCE_THRESHOLD:
+        else:
+            view['South'] = True
+        if self.laserscan.ranges[269] >= self.DISTANCE_THRESHOLD:
             view['East'] = False
-
+        else:
+            view['East'] = True
+        print(view)
         return view
 
     def think(self, view):
-        self.prothonics.useBrain().reactTo("perception(['{0}', '{1}', '{2}', '{3}'])".format(view[0], view[1], view[2],
-                                                                                             view[3]), "takeDecision()")
+        self.prothonics.useBrain().reactTo("perception(['{}', '{}', '{}', '{}'])".format(view['North'], view['West'],
+                                                                     view['East'], view['South']), "takeDecision()")
 
         direction = None
         try:
@@ -135,6 +144,7 @@ class Robot:
                 self.previous_decision = curr_decision
         except IndexError:
             direction = None
+        print(direction)
         return direction
 
     def act(self, direction):
@@ -145,21 +155,22 @@ class Robot:
             command.angular.z = 0.0
 
         if direction == 'West':
-            # Devo ruotarmi ed andare avanti oppure basta utilizzare command.linear.y oppure command.angular.y?
-            pass
+            self.rotate_by(89, 0.05)
+            command.linear.x = 0.5
 
         if direction == 'South':
             command.linear.x = -0.5
             command.angular.z = 0.0
 
         if direction == 'East':
-           pass
+           self.rotate_by(269, 0.05)
+           command.linear.x = 0.5
 
         self.velocity_publisher.publish(command)
 
 
     def start(self):
-        rospy.loginfo("Robot started...")
+        '''rospy.loginfo("Robot started...")
         self.get_home()
         print('home taken')
         print('coordinate casa - x:{} , y:{}'.format(self.home_x, self.home_y))
@@ -178,11 +189,11 @@ class Robot:
         #rospy.loginfo("Chosen direction is: {}.".format(direction))
 
         #self.act(direction)
-        #rospy.loginfo("Robot moved")
-
+        #rospy.loginfo("Robot moved")'''
+        rospy.sleep(2)
         # TODO this should be a while true but for now we try only one move (that should be north).
 
-
+        self.act(self.think(self.sense()))
 if __name__ == "__main__":
     robot = Robot()
     rospy.spin()
