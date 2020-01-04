@@ -89,7 +89,6 @@ class Robot:
 
         while abs(round((round(starting_rad + abs(degree) % 360, 5) - abs(round(self.useQuaternion() % 360, 5))) % 360, 5))\
                 > 0.05:
-            print(abs(round((round(starting_rad + abs(degree) % 360, 5) - abs(round(self.useQuaternion() % 360, 5))) % 360, 5)))
             self.velocity_publisher.publish(command)
 
         command.angular.z = 0
