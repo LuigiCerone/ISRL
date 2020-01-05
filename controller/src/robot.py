@@ -17,7 +17,7 @@ class Robot:
         self.home_x = None
         self.home_y = None
 
-        self.DISTANCE_THRESHOLD = 1 # what is the unit measure?
+        self.DISTANCE_THRESHOLD = .3 # what is the unit measure?
 
         # TODO Check if this is useful, in the previous hw this was used to avoid a bug with prothonics.
         self.previous_decision = None
@@ -107,6 +107,11 @@ class Robot:
         print('guardo verso il punto')
         self.rotate_by(round(theta,5), angular_velocity)
 
+    def stop(self):
+        command = Twist()
+        command.linear.x = 0
+        self.velocity_publisher.publish(command)
+
     def sense(self):
         # TODO Once working use 8 directions with range of angles.
         # In self.laserscan we have the reading of laser sensor.
@@ -193,8 +198,17 @@ class Robot:
         #rospy.loginfo("Robot moved")'''
         rospy.sleep(2)
         # TODO this should be a while true but for now we try only one move (that should be north).
-
-        self.act(self.think(self.sense()))
+        while True:
+            sense = self.sense()
+            think = self.think(sense)
+            if think is not None:
+                self.act(think)
+            else:
+                break
+            while self.laserscan.ranges[0] >= self.DISTANCE_THRESHOLD:
+                pass
+            self.stop()
+            print("mi calibro")
 if __name__ == "__main__":
     robot = Robot()
     rospy.spin()
