@@ -90,7 +90,8 @@ class Robot:
         starting_rad = round(self.useQuaternion() % 360, 5)
 
         while abs(round((round(starting_rad + abs(degree) % 360, 5) - abs(round(self.useQuaternion() % 360, 5))) % 360, 5))\
-                > 0.05:
+                > 0.5:
+            print(abs(round((round(starting_rad + abs(degree) % 360, 5) - abs(round(self.useQuaternion() % 360, 5))) % 360, 5)))
             self.velocity_publisher.publish(command)
 
         command.angular.z = 0
@@ -116,24 +117,25 @@ class Robot:
         # TODO Once working use 8 directions with range of angles.
         # In self.laserscan we have the reading of laser sensor.
         view = dict()
-        if self.laserscan.ranges[0] >= self.DISTANCE_THRESHOLD:
-            view['North'] = False # Because in prothonics logic false means there isn't an obstacle.
-        else:
-            view['North'] = True
-        if self.laserscan.ranges[89] >= self.DISTANCE_THRESHOLD:
-            view['West'] = False
-        else:
-            view['West'] = True
+        view['North'] = False # In prothonics' logic False means there isn't an obstacle.
+        for angle in range(0, 45):
+            if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
+                    self.laserscan.ranges[(360 - angle) % 360] <= self.DISTANCE_THRESHOLD:
+                view['North'] = True
+        view['West'] = False
+        for angle in range(45, 135):
+            if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD:
+                view['West'] = True
         # TODO Check if 89th element is left or right?
+        view['South'] = False
+        for angle in range(135, 225):
+            if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD:
+                view['South'] = True
+        view['East'] = False
+        for angle in range(225, 315):
+            if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD:
+                view['East'] = True
 
-        if self.laserscan.ranges[159] >= self.DISTANCE_THRESHOLD:
-            view['South'] = False
-        else:
-            view['South'] = True
-        if self.laserscan.ranges[269] >= self.DISTANCE_THRESHOLD:
-            view['East'] = False
-        else:
-            view['East'] = True
         print(view)
         return view
 
@@ -199,14 +201,21 @@ class Robot:
         rospy.sleep(2)
         # TODO this should be a while true but for now we try only one move (that should be north).
         while True:
+            flag = False
             sense = self.sense()
             think = self.think(sense)
             if think is not None:
                 self.act(think)
             else:
                 break
-            while self.laserscan.ranges[0] >= self.DISTANCE_THRESHOLD:
-                pass
+            while True:
+                for angle in range(0, 45):
+                    if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
+                            self.laserscan.ranges[(360 - angle) % 360] <= self.DISTANCE_THRESHOLD:
+                        flag = True
+                        break
+                if flag:
+                    break
             self.stop()
             print("mi calibro")
 if __name__ == "__main__":
