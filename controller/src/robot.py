@@ -208,6 +208,8 @@ class Robot:
             else:
                 break
             while True:
+                self.prothonics.useBrain().useMemory().putNewFact("position({},{}).".format(
+                    self.odometry.pose.pose.position.x, self.odometry.pose.pose.position.y))
                 for angle in range(0, 45):
                     if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
                             self.laserscan.ranges[(360 - angle) % 360] <= self.DISTANCE_THRESHOLD:
