@@ -30,7 +30,7 @@
   <xacro:macro name="cylinder_inertia" params="m r h">
     <inertial>
       <mass value="${m}"/>
-      <inertia ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0" iyy="${m*(3*r*r+h*h)/12}" iyz = "0" izz="${m*r*r/2}"/> 
+      <inertia ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0" iyy="${m*(3*r*r+h*h)/12}" iyz = "0" izz="${m*r*r/2}"/>
     </inertial>
   </xacro:macro>
 
@@ -136,7 +136,7 @@
     <axis xyz="0 1 0" rpy="0 0 0" />
     <parent link="base_link"/>
     <child link="caster_wheel"/>
-    <origin xyz="${caster_wheel_joint_offset} 0 -${caster_wheel_radius-0.005}" rpy="0 0 0"/>
+    <origin xyz="${caster_wheel_joint_offset} 0 -${caster_wheel_radius+0.005}" rpy="0 0 0"/>
   </joint>
 
   <xacro:property name="laser_size_x" value="0.03"/>
@@ -153,12 +153,17 @@
       </geometry>
       <material name="blue"/>
     </visual>
+    <!--visual>
+      <geometry>
+        <mesh filename="package://mio_robot_description/meshes/hokuyo.dae"/>
+      </geometry>
+    </visual-->
     <collision>
       <geometry>
         <box size="${laser_size_x} ${laser_size_y} ${laser_size_z}"/>
       </geometry>
     </collision>
-    <xacro:box_inertia m="12" w="${laser_size_x}" h="${laser_size_y}" d="${laser_size_z}"/>
+    <xacro:box_inertia m="0.2" w="${laser_size_x}" h="${laser_size_y}" d="${laser_size_z}"/>
   </link>
 
   <joint name="sensor_laser_joint" type="fixed">
