@@ -1,9 +1,11 @@
 :- dynamic(list/1).
+:- dynamic(degree/1).
 
 % Per come è fatto adesso asserziona le percezioni passate e con takeDecision sceglie dove andare.
 % perception(['False', 'False', 'False', 'False'])
 % False= Non ho ostacolo;
 % True = Ho un ostacolo;
+perception(['False', 'False', 'False', 'False']).
 hasValue('NorthSensor', S1) :- perception([S1, _, _, _]).
 hasValue('WestSensor', S2) :- perception([_, S2, _, _]).
 hasValue('EastSensor', S3) :- perception([_, _, S3, _]).
@@ -13,7 +15,7 @@ hasValue('SouthSensor', S4) :- perception([_, _, _, S4]).
 degree(0). % Per contenere orientamento.
 
 % list([]). % Per le direzioni precedentemente prese.
-list(['W', 'W', 'S']).
+list(['W', 'W', 'S', 'N']).
 
 count([],_,0).
 count([X|T],X,Y):- !, count(T,X,Z), Y is 1+Z.
@@ -48,95 +50,108 @@ minInList([H,K|T],M) :-
     H > K,                              % H is greater than K
     minInList([K|T],M).
 
-findMin(List) :-
+% findMin ritorna la direzione meno scelta riferente la mappa (non al robot)
+findMin(List, Return) :-
                     coordsCount(N, W, S, E, List),
                     L = [N, W, S, E],
                     print('List:'), print(L), nl,
-                    minInList(List, Minimum),
-                    indexOf(List, Minimum, Index),
-                    print('The index of the minimum:'), print(Index), assert(minimum(Index)), nl.
+                    minInList(L, Minimum),
+                    indexOf(L, Minimum, Index),
+                    (
+                        Index =:= 0 -> Return = 'North'
+                        ;
+                        Index =:= 1 -> Return = 'West'
+                        ;
+                        Index =:= 2 -> Return = 'South'
+                        ;
+                        Index =:= 3 -> Return = 'East'
+                    ).
 
-computeDirectionEnv('North'):-  degree(CurrentDegree),
-                            (   CurrentDegree  =:= 0, hasValue('NorthSensor', 'False') ->
-                                updateList(['N']), takeDecision('North')
-                            ;   CurrentDegree =:= 90, hasValue('EastSensor', 'False') ->
-                                updateList(['N']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(0)),
-                                takeDecision('East')
-                            ;   CurrentDegree =:= 180, hasValue('SouthSensor', 'False') ->
-                                updateList(['N']), 
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(0)),
-                                takeDecision(['South'])
-                            ;   CurrentDegree =:= 270, hasValue('WestSensor', 'False') -> 
-                                updateList(['N']), 
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(0)),
-                                takeDecision(['West'])
-                            ).
-
-computeDirectionEnv('West'):-  degree(CurrentDegree),
-                            (   CurrentDegree  =:= 0, hasValue('WestSensor', 'False') ->
-                                updateList(['W']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(90)),
-                                takeDecision(['West'])
-                            ;   CurrentDegree =:= 90, hasValue('NorthSensor', 'False') ->
-                                updateList(['W']),
-                                takeDecision(['North'])
-                            ;   CurrentDegree =:= 180, hasValue('EastSensor', 'False') ->
-                                updateList(['W']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(90)),
-                                takeDecision(['East'])
-                            ;   CurrentDegree =:= 270, hasValue('SouthSensor', 'False') -> 
-                                updateList(['W']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(90)),
-                                takeDecision(['South'])
-                            ).
-
-computeDirectionEnv('East'):-  degree(CurrentDegree),
-                            (   CurrentDegree  =:= 0, hasValue('EastSensor', 'False') ->
-                                updateList(['E']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(270)),
-                                takeDecision(['East'])
-                            ;   CurrentDegree =:= 90, hasValue('SouthSensor', 'False') ->
-                                updateList(['E']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(270)),
-                                takeDecision(['South'])
-                            ;   CurrentDegree =:= 180, hasValue('WestSensor', 'False') ->
-                                updateList(['E']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(270)),
-                                takeDecision(['West'])
-                            ;   CurrentDegree =:= 270, hasValue('NorthSensor', 'False') -> 
-                                updateList(['E']),
-                                takeDecision(['North'])
-                            ).
-
-computeDirectionEnv('South'):-  degree(CurrentDegree),
-                            (   CurrentDegree  =:= 0, hasValue('SouthSensor', 'False') ->
-                                updateList(['S']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(180)),
-                                takeDecision(['South'])
-                            ;   CurrentDegree =:= 90, hasValue('WestSensor', 'False') ->
-                                updateList(['S']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(180)),
-                                takeDecision(['West'])
-                            ;   CurrentDegree =:= 180, hasValue('NorthSensor', 'False') ->
-                                updateList(['S']),
-                                takeDecision(['North'])
-                            ;   CurrentDegree =:= 270, hasValue('EastSensor', 'False') -> 
-                                updateList(['S']),
-                                retract(degree(CurrentDegree)), 
-                                assert(degree(180)),
-                                takeDecision(['East'])
+takeDecision(D):-  degree(CurrentDegree), list(L), findMin(L, R), 
+                            (
+                                R == 'North' -> 
+                                    (   CurrentDegree  =:= 0, hasValue('NorthSensor', 'False') ->
+                                        updateList(['N']),
+                                        D = 'North'
+                                    ;   CurrentDegree =:= 90, hasValue('EastSensor', 'False') ->
+                                        updateList(['N']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(0)),
+                                        D = 'East'
+                                    ;   CurrentDegree =:= 180, hasValue('SouthSensor', 'False') ->
+                                        updateList(['N']), 
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(0)),
+                                        D = 'South'
+                                    ;   CurrentDegree =:= 270, hasValue('WestSensor', 'False') -> 
+                                        updateList(['N']), 
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(0)),
+                                        D = 'West'
+                                    )
+                                ;
+                                R == 'West' ->
+                                    (   CurrentDegree  =:= 0, hasValue('WestSensor', 'False') ->
+                                        updateList(['W']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(90)),
+                                        D = 'West'
+                                    ;   CurrentDegree =:= 90, hasValue('NorthSensor', 'False') ->
+                                        updateList(['W']),
+                                        D = 'North'
+                                    ;   CurrentDegree =:= 180, hasValue('EastSensor', 'False') ->
+                                        updateList(['W']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(90)),
+                                        D = 'East'
+                                    ;   CurrentDegree =:= 270, hasValue('SouthSensor', 'False') -> 
+                                        updateList(['W']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(90)),
+                                        D = 'South'
+                                    )
+                                ;
+                                R == 'East' -> 
+                                    (   CurrentDegree  =:= 0, hasValue('EastSensor', 'False') ->
+                                        updateList(['E']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(270)),
+                                        D = 'East'
+                                    ;   CurrentDegree =:= 90, hasValue('SouthSensor', 'False') ->
+                                        updateList(['E']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(270)),
+                                        D = 'South'
+                                    ;   CurrentDegree =:= 180, hasValue('WestSensor', 'False') ->
+                                        updateList(['E']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(270)),
+                                        D = 'West'
+                                    ;   CurrentDegree =:= 270, hasValue('NorthSensor', 'False') -> 
+                                        updateList(['E']),
+                                        D = 'North'
+                                    )
+                                ;
+                                R == 'South' ->
+                                    (   CurrentDegree  =:= 0, hasValue('SouthSensor', 'False') ->
+                                        updateList(['S']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(180)),
+                                        D = 'South'
+                                    ;   CurrentDegree =:= 90, hasValue('WestSensor', 'False') ->
+                                        updateList(['S']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(180)),
+                                        D = 'West'
+                                    ;   CurrentDegree =:= 180, hasValue('NorthSensor', 'False') ->
+                                        updateList(['S']),
+                                        D = 'North'
+                                    ;   CurrentDegree =:= 270, hasValue('EastSensor', 'False') -> 
+                                        updateList(['S']),
+                                        retract(degree(CurrentDegree)), 
+                                        assert(degree(180)),
+                                        D = 'East'
+                                    )
                             ).
 
 % takeDecision('North') :-
