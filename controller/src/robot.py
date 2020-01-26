@@ -98,7 +98,7 @@ class Robot:
 
     def rotate_to_point(self, x, y, angular_velocity):
         print('guardo a nord')
-        self.rotate_by(0, 0.05)
+        self.rotate_by(0, 0.2)
         rospy.sleep(5)
         delta_x = x - round(self.odometry.pose.pose.position.x, 7)
         delta_y = y - round(self.odometry.pose.pose.position.y, 7)

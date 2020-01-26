@@ -4,6 +4,6 @@
           type="robot.py"
           respawn="false"
           output="screen">
-          <param name="prolog" value="$(find controller)/src/behaviour.pl"/>
+          <param name="prolog" value="$(find controller)/src/behaviour1.pl"/>
      </node>
 </launch>
