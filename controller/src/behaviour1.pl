@@ -25,7 +25,7 @@ listCount(ElemToFind, NumberOccur, List) :-
             count(List, ElemToFind, NumberOccur).
 
 updateList(NewList) :- list(L), append(L, NewList, Result),
-                        print(Result),
+                        print('New list is: '), print(Result), nl,
                         retract(list(L)), assert(list(Result)).
 
 coordsCount(North, West, South, East, List) :-
@@ -73,79 +73,91 @@ takeDecision(D):-  degree(CurrentDegree), list(L), findMin(L, R),
                             print('Direction wrt to map is: '), print(R), nl,
                             (
                                 R == 'North' ->
-                                    updateList(['N']),
                                     (   CurrentDegree  =:= 0, hasValue('NorthSensor', 'False') ->
+                                        updateList(['N']),
                                         D = 'North'
                                     ;   CurrentDegree =:= 90, hasValue('EastSensor', 'False') ->
+                                        updateList(['N']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(0)),
                                         D = 'East'
                                     ;   CurrentDegree =:= 180, hasValue('SouthSensor', 'False') ->
+                                        updateList(['N']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(0)),
                                         D = 'South'
                                     ;   CurrentDegree =:= 270, hasValue('WestSensor', 'False') ->
+                                        updateList(['N']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(0)),
                                         D = 'West'
-                                    ;   print('empty north'), emptyDirection(D, CurrentDegree)
+                                    ;   print('busy north'), nl, emptyDirection(D, CurrentDegree)
                                     )
                                 ;
                                 R == 'West' ->  
-                                    updateList(['W']),
                                     (   CurrentDegree  =:= 0, hasValue('WestSensor', 'False') ->
+                                        updateList(['W']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(90)),
                                         D = 'West'
                                     ;   CurrentDegree =:= 90, hasValue('NorthSensor', 'False') ->
+                                        updateList(['W']),
                                         D = 'North'
                                     ;   CurrentDegree =:= 180, hasValue('EastSensor', 'False') ->
+                                        updateList(['W']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(90)),
                                         D = 'East'
                                     ;   CurrentDegree =:= 270, hasValue('SouthSensor', 'False') -> 
+                                        updateList(['W']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(90)),
                                         D = 'South'
-                                    ; print('empty west'), emptyDirection(D, CurrentDegree)
+                                    ; print('busy west'), nl, emptyDirection(D, CurrentDegree)
                                     )   
                                 ;
                                 R == 'East' ->
-                                    updateList(['E']),
                                     (   CurrentDegree  =:= 0, hasValue('EastSensor', 'False') ->
+                                        updateList(['E']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(270)),
                                         D = 'East'
                                     ;   CurrentDegree =:= 90, hasValue('SouthSensor', 'False') ->
+                                        updateList(['E']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(270)),
                                         D = 'South'
                                     ;   CurrentDegree =:= 180, hasValue('WestSensor', 'False') ->
+                                        updateList(['E']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(270)),
                                         D = 'West'
                                     ;   CurrentDegree =:= 270, hasValue('NorthSensor', 'False') -> 
+                                        updateList(['E']),
                                         D = 'North'
-                                    ;   print('empty east'), emptyDirection(D, CurrentDegree)
+                                    ;   print('busy east'), nl, emptyDirection(D, CurrentDegree)
                                     )
                                 ;
                                 R == 'South' ->
-                                    updateList(['S']),
                                     (   CurrentDegree  =:= 0, hasValue('SouthSensor', 'False') ->
+                                        updateList(['S']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(180)),
                                         D = 'South'
                                     ;   CurrentDegree =:= 90, hasValue('WestSensor', 'False') ->
+                                        updateList(['S']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(180)),
                                         D = 'West'
                                     ;   CurrentDegree =:= 180, hasValue('NorthSensor', 'False') ->
+                                        updateList(['S']),
                                         D = 'North'
                                     ;   CurrentDegree =:= 270, hasValue('EastSensor', 'False') ->
+                                        updateList(['S']),
                                         retract(degree(CurrentDegree)), 
                                         assert(degree(180)),
                                         D = 'East'
-                                    ;   print('empty south'), emptyDirection(D, CurrentDegree)
+                                    ;   print('busy south'), nl, emptyDirection(D, CurrentDegree)
                                     )
                             ).
 
@@ -154,62 +166,65 @@ takeDecision(D):-  degree(CurrentDegree), list(L), findMin(L, R),
 
 % emptyDirection('West', CurrentDegree) :-
 %     hasValue('WestSensor', 'False'),
-%     newDegree is mod(CurrentDegree+90, 360),
+%     NewDegree is mod(CurrentDegree+90, 360),
 %     retract(degree(CurrentDegree)),
-%     assert(degree(newDegree)), print('eccolo2'),
+%     assert(degree(NewDegree)), print('eccolo2'),
 %     !.
 
 % emptyDirection('East', CurrentDegree) :-
 %     hasValue('EastSensor', 'False'),
-%     newDegree is mod(CurrentDegree+180, 360),
+%     NewDegree is mod(CurrentDegree+180, 360),
 %     retract(degree(CurrentDegree)),
-%     assert(degree(newDegree)), print('eccolo3'),
+%     assert(degree(NewDegree)), print('eccolo3'),
 %     !.
 
 % emptyDirection('South', CurrentDegree) :-
 %     hasValue('SouthSensor', 'False'),
-%     newDegree is mod(CurrentDegree+270, 360),
+%     NewDegree is mod(CurrentDegree+270, 360),
 %     retract(degree(CurrentDegree)),
-%     assert(degree(newDegree)),print('eccolo4'),
+%     assert(degree(NewDegree)),print('eccolo4'),
 %     !.
 
 % Determine empty direction, update currentDegree and then calculate the coord wrt to map system.
 emptyDirection(D, CurrentDegree) :-
-                                print('emptyDirection'),nl,
+                                print('finding emptyDirection'),nl,
                                 print('CurrentDegree is: '), print(CurrentDegree), nl, 
                                 (
                                 hasValue('NorthSensor', 'False') -> print('North is empty'),
+                                    print('North is empty'), nl,
                                     D = 'North',
                                     (   CurrentDegree  =:= 0 ->
-                                        updateList(['N']),
+                                        updateList(['N'])
                                     ;   CurrentDegree =:= 90 ->
-                                        updateList(['E']),
+                                        updateList(['E'])
                                     ;   CurrentDegree =:= 180 ->
-                                        updateList(['S']),
+                                        updateList(['S'])
                                     ;   CurrentDegree =:= 270 ->
                                         updateList(['W'])
                                     )
                                 ;
                                hasValue('WestSensor', 'False') -> print('West is empty'),
+                                    print('West is empty'), nl,
                                     D = 'West',
-                                    newDegree is mod(CurrentDegree+90, 360),
+                                    NewDegree is mod(CurrentDegree+90, 360),
                                     retract(degree(CurrentDegree)),
-                                    assert(degree(newDegree)),
+                                    assert(degree(NewDegree)),
                                     (   CurrentDegree  =:= 0 ->
-                                        updateList(['W']),
+                                        updateList(['W'])
                                     ;   CurrentDegree =:= 90 ->
-                                        updateList(['N']),
+                                        updateList(['N'])
                                     ;   CurrentDegree =:= 180 ->
-                                        updateList(['E']),
+                                        updateList(['E'])
                                     ;   CurrentDegree =:= 270 -> 
                                         updateList(['S'])
                                     )   
                                 ;
                                 hasValue('EastSensor', 'False') -> print('East is empty'),
+                                    print('East is empty'), nl,
                                     D = 'East',
-                                    newDegree is mod(CurrentDegree+180, 360),
+                                    NewDegree is mod(CurrentDegree+180, 360),
                                     retract(degree(CurrentDegree)),
-                                    assert(degree(newDegree)),
+                                    assert(degree(NewDegree)),
                                     (   CurrentDegree  =:= 0 ->
                                         updateList(['E'])
                                     ;   CurrentDegree =:= 90 ->
@@ -220,11 +235,12 @@ emptyDirection(D, CurrentDegree) :-
                                         updateList(['N'])
                                     )
                                 ;
-                                hasValue('SouthSensor', 'False') -> print('South is empty'),
+                                hasValue('SouthSensor', 'False') -> 
+                                    print('South is empty'), nl,
                                     D = 'South',
-                                    newDegree is mod(CurrentDegree+270, 360),
+                                    NewDegree is mod(CurrentDegree+270, 360),
                                     retract(degree(CurrentDegree)),
-                                    assert(degree(newDegree)),
+                                    assert(degree(NewDegree)),
                                     (   CurrentDegree  =:= 0 ->
                                         updateList(['S'])
                                     ;   CurrentDegree =:= 90 ->
