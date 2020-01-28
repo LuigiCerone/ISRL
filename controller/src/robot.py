@@ -145,11 +145,12 @@ class Robot:
         direction = None
         try:
             direction = self.prothonics.useBrain().useMemory().getAllDecisions()[-1][0]
+            # Cosa contiene curr_decision?
             curr_decision = self.prothonics.useBrain().useMemory().getAllDecisions()[-1][1]
-            if curr_decision == self.previous_decision:
+            if direction == self.previous_decision:
                 direction = None
             else:
-                self.previous_decision = curr_decision
+                self.previous_decision = direction
         except IndexError:
             direction = None
         print(direction)
@@ -198,7 +199,6 @@ class Robot:
         #self.act(direction)
         #rospy.loginfo("Robot moved")'''
         rospy.sleep(2)
-        # TODO this should be a while true but for now we try only one move (that should be north).
         while True:
             flag = False
             sense = self.sense()
@@ -207,6 +207,7 @@ class Robot:
                 self.act(think)
             else:
                 break
+                # TODO Siamo sicuri break e non continue? Da testare.
             while True:
                 self.prothonics.useBrain().useMemory().putNewFact("position({},{}).".format(
                     self.odometry.pose.pose.position.x, self.odometry.pose.pose.position.y))
