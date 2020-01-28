@@ -37,12 +37,13 @@ class Robot:
         rospy.Subscriber('/odom', Odometry, self.odom_callback)
         rospy.Subscriber("/scan", LaserScan, self.laser_callback)
 
-        self.should_go_home = False
+        # Note: True means don't go home.
+        self.should_go_home = True
         rospy.Subscriber('/home', String, self.home_callback)
 
         self.initial_pose = self.compute_initial_pose()
         # self.rotate_by(360, 1)
-        self.start()
+        # self.start()
 
     def laser_callback(self, laserscan):
         self.laserscan = laserscan
@@ -52,7 +53,7 @@ class Robot:
     
     def home_callback(self, msg):
         rospy.loginfo("Just received on topic /home the message: {}, I'm going home!".format(msg.data))
-        self.should_go_home = True
+        self.should_go_home = False
 
     def compute_initial_pose(self):
         # The following should compute the pose, it's commented out beacuse I've used a package to do so.
@@ -261,9 +262,9 @@ class Robot:
     def run(self):
         """The control loop of the car."""
 
-        rate = rospy.Rate(self._rate)
+        rate = rospy.Rate(2)
 
-        while not rospy.is_shutdown() or should_go_home:
+        while not rospy.is_shutdown() and self.should_go_home:
             flag = False
             sense = self.sense()
             think = self.think(sense)
@@ -286,11 +287,13 @@ class Robot:
 
             rate.sleep()
         
-        if should_go_home:
+        if self.should_go_home:
+            rospy.loginfo("Actually going home...")
             # TODO Go home! In order to do this we need to pusblish on /move_base_simple/goal the inizial position in format PoseStamped.
             goal_publisher = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size=1)
             goal_publisher.publish(self.initial_pose)
     
 if __name__ == "__main__":
     robot = Robot()
-    rospy.spin()
+    # rospy.spin()
+    robot.run()
