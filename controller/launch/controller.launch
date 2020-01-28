@@ -6,4 +6,11 @@
           output="screen">
           <param name="prolog" value="$(find controller)/src/behaviour1.pl"/>
      </node>
+     <node
+          name="pose_publisher"
+          pkg="pose_publisher"
+          type="pose_publisher"
+          output="screen"
+     >
+     </node>
 </launch>

@@ -16,3 +16,14 @@ ssh pi@IP_RASPBERRY
 export ROS_MASTER_URI=http://IP_LAPTOP:1311
 
 roslaunch raspberry_car raspberry_car.launch
+
+
+Scaricare da qui il package pose_publisher: https://github.com/yzrobot/pose_publisher
+I comandi da dare sono:
+cd ~/catkin_ws/src
+git clone https://github.com/yzrobot/pose_publisher
+cd .. 
+catkin_make
+
+Il comando per da riga di comando per far tornare a casa il robot è
+rostopic pub /home std_msgs/String 'ciao'

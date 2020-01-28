@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import rospy
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, PoseStamped
 from nav_msgs.msg import Odometry
+from std_msgs.msg import String
 import math
 import tf
 from geometry_msgs.msg import Quaternion
@@ -36,6 +37,10 @@ class Robot:
         rospy.Subscriber('/odom', Odometry, self.odom_callback)
         rospy.Subscriber("/scan", LaserScan, self.laser_callback)
 
+        self.should_go_home = False
+        rospy.Subscriber('/home', String, self.home_callback)
+
+        self.initial_pose = self.compute_initial_pose()
         # self.rotate_by(360, 1)
         self.start()
 
@@ -44,6 +49,41 @@ class Robot:
 
     def odom_callback(self, odometry):
         self.odometry = odometry
+    
+    def home_callback(self, msg):
+        rospy.loginfo("Just received on topic /home the message: {}, I'm going home!".format(msg.data))
+        self.should_go_home = True
+
+    def compute_initial_pose(self):
+        # The following should compute the pose, it's commented out beacuse I've used a package to do so.
+        # listener = tf.TransformListener()
+        # pose_stamped = PoseStamped()
+
+        # try:
+        #     now = rospy.Time.now()
+        #     listener.waitForTransform('map', 'base_link', now, rospy.Duration(10.0))
+        #     (bf_trans, bf_rot) = listener.lookupTransform('map', 'base_link', now)
+        #     # [ x, y, z ] [x, y, z, w]
+        #     pose_stamped.header.stamp = rospy.Time.now()
+        #     pose_stamped.header.frame_id = "tf/map"
+
+        #     pose_stamped.pose.position.x = bf_trans[0]
+        #     pose_stamped.pose.position.y = bf_trans[1]
+        #     pose_stamped.pose.position.z = bf_trans[2]
+
+        #     pose_stamped.pose.orientation.x = bf_rot[0]
+        #     pose_stamped.pose.orientation.y = bf_rot[1]
+        #     pose_stamped.pose.orientation.z = bf_rot[2]
+        #     pose_stamped.pose.orientation.w = bf_rot[3]
+
+        #     rospy.loginfo("Initial position: {}".format(pose_stamped.serialize()))
+
+        # except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+        #     rospy.logerr(e)
+        # self.initial_pose = pose_stamped;
+           
+        self.initial_pose = rospy.wait_for_message('/pose', PoseStamped)
+        rospy.loginfo("The default position is: {}".format(self.initial_pose))
 
     def useQuaternion(self):
         self.quaternion = Quaternion(
@@ -217,6 +257,40 @@ class Robot:
                     break
             self.stop()
             print("mi calibro")
+
+    def run(self):
+        """The control loop of the car."""
+
+        rate = rospy.Rate(self._rate)
+
+        while not rospy.is_shutdown() or should_go_home:
+            flag = False
+            sense = self.sense()
+            think = self.think(sense)
+            if think is not None:
+                self.act(think)
+            else:
+                break
+            while True:
+                self.prothonics.useBrain().useMemory().putNewFact("position({},{}).".format(
+                    self.odometry.pose.pose.position.x, self.odometry.pose.pose.position.y))
+                for angle in range(0, 45):
+                    if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
+                            self.laserscan.ranges[(360 - angle) % 360] <= self.DISTANCE_THRESHOLD:
+                        flag = True
+                        break
+                if flag:
+                    break
+            self.stop()
+            print("mi calibro")
+
+            rate.sleep()
+        
+        if should_go_home:
+            # TODO Go home! In order to do this we need to pusblish on /move_base_simple/goal the inizial position in format PoseStamped.
+            goal_publisher = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size=1)
+            goal_publisher.publish(self.initial_pose)
+    
 if __name__ == "__main__":
     robot = Robot()
     rospy.spin()
