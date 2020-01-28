@@ -78,7 +78,7 @@ takeDecision(D):-  degree(CurrentDegree), list(L), findMin(L, R),
                                         D = 'North'
                                     ;   CurrentDegree =:= 90, hasValue('EastSensor', 'False') ->
                                         updateList(['N']),
-                                        retract(degree(CurrentDegree)), 
+                                        retract(degree(CurrentDegree)),
                                         assert(degree(0)),
                                         D = 'East'
                                     ;   CurrentDegree =:= 180, hasValue('SouthSensor', 'False') ->
@@ -222,7 +222,7 @@ emptyDirection(D, CurrentDegree) :-
                                 hasValue('EastSensor', 'False') -> print('East is empty'),
                                     print('East is empty'), nl,
                                     D = 'East',
-                                    NewDegree is mod(CurrentDegree+180, 360),
+                                    NewDegree is mod(CurrentDegree+270, 360),
                                     retract(degree(CurrentDegree)),
                                     assert(degree(NewDegree)),
                                     (   CurrentDegree  =:= 0 ->
@@ -238,7 +238,7 @@ emptyDirection(D, CurrentDegree) :-
                                 hasValue('SouthSensor', 'False') -> 
                                     print('South is empty'), nl,
                                     D = 'South',
-                                    NewDegree is mod(CurrentDegree+270, 360),
+                                    NewDegree is mod(CurrentDegree+180, 360),
                                     retract(degree(CurrentDegree)),
                                     assert(degree(NewDegree)),
                                     (   CurrentDegree  =:= 0 ->

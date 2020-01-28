@@ -147,10 +147,7 @@ class Robot:
             direction = self.prothonics.useBrain().useMemory().getAllDecisions()[-1][0]
             # Cosa contiene curr_decision?
             curr_decision = self.prothonics.useBrain().useMemory().getAllDecisions()[-1][1]
-            if direction == self.previous_decision:
-                direction = None
-            else:
-                self.previous_decision = direction
+            
         except IndexError:
             direction = None
         print(direction)
@@ -164,15 +161,15 @@ class Robot:
             command.angular.z = 0.0
 
         if direction == 'West':
-            self.rotate_by(89, 0.05)
+            self.rotate_by(89, 0.2)
             command.linear.x = 0.5
 
         if direction == 'South':
-            command.linear.x = -0.5
-            command.angular.z = 0.0
+            self.rotate_by(179, 0.2)
+            command.linear.x = 0.5
 
         if direction == 'East':
-           self.rotate_by(269, 0.05)
+           self.rotate_by(269, 0.2)
            command.linear.x = 0.5
 
         self.velocity_publisher.publish(command)
