@@ -37,8 +37,7 @@ class Robot:
         rospy.Subscriber('/odom', Odometry, self.odom_callback)
         rospy.Subscriber("/scan", LaserScan, self.laser_callback)
 
-        # Note: True means don't go home.
-        self.should_go_home = True
+        self.should_go_home = False
         rospy.Subscriber('/home', String, self.home_callback)
 
         self.initial_pose = self.compute_initial_pose()
@@ -53,7 +52,7 @@ class Robot:
     
     def home_callback(self, msg):
         rospy.loginfo("Just received on topic /home the message: {}, I'm going home!".format(msg.data))
-        self.should_go_home = False
+        self.should_go_home = True
 
     def compute_initial_pose(self):
         # The following should compute the pose, it's commented out beacuse I've used a package to do so.
@@ -264,34 +263,38 @@ class Robot:
 
         rate = rospy.Rate(2)
 
-        while not rospy.is_shutdown() and self.should_go_home:
-            flag = False
-            sense = self.sense()
-            think = self.think(sense)
-            if think is not None:
-                self.act(think)
+        while not rospy.is_shutdown():
+            if self.should_go_home:
+                rospy.loginfo("Actually going home...")
+                # TODO Go home! In order to do this we need to pusblish on /move_base_simple/goal the inizial position in format PoseStamped.
+                goal_publisher = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size=1)
+                goal_publisher.publish(self.initial_pose)
+            
             else:
-                break
-            while True:
-                self.prothonics.useBrain().useMemory().putNewFact("position({},{}).".format(
-                    self.odometry.pose.pose.position.x, self.odometry.pose.pose.position.y))
-                for angle in range(0, 45):
-                    if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
-                            self.laserscan.ranges[(360 - angle) % 360] <= self.DISTANCE_THRESHOLD:
-                        flag = True
-                        break
-                if flag:
+
+
+                flag = False
+                sense = self.sense()
+                think = self.think(sense)
+                if think is not None:
+                    self.act(think)
+                else:
                     break
-            self.stop()
-            print("mi calibro")
+                while True:
+                    self.prothonics.useBrain().useMemory().putNewFact("position({},{}).".format(
+                        self.odometry.pose.pose.position.x, self.odometry.pose.pose.position.y))
+                    for angle in range(0, 45):
+                        if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
+                                self.laserscan.ranges[(360 - angle) % 360] <= self.DISTANCE_THRESHOLD:
+                            flag = True
+                            break
+                    if flag:
+                        break
+                self.stop()
+                print("mi calibro")
 
             rate.sleep()
-        
-        if self.should_go_home:
-            rospy.loginfo("Actually going home...")
-            # TODO Go home! In order to do this we need to pusblish on /move_base_simple/goal the inizial position in format PoseStamped.
-            goal_publisher = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size=1)
-            goal_publisher.publish(self.initial_pose)
+            
     
 if __name__ == "__main__":
     robot = Robot()
