@@ -2,6 +2,7 @@
 
 import rospy
 from geometry_msgs.msg import Twist, PoseStamped
+from move_base_msgs.msg import MoveBaseActionGoal, MoveBaseGoal
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 import math
@@ -40,7 +41,7 @@ class Robot:
         self.should_go_home = False
         rospy.Subscriber('/home', String, self.home_callback)
 
-        self.initial_pose = self.compute_initial_pose()
+        self.compute_initial_pose()
         # self.rotate_by(360, 1)
         # self.start()
 
@@ -84,6 +85,17 @@ class Robot:
            
         self.initial_pose = rospy.wait_for_message('/pose', PoseStamped)
         rospy.loginfo("The default position is: {}".format(self.initial_pose))
+
+        # Trasfrom from PoseStamped to MoveBaseActionGoal.
+
+        move_base = MoveBaseGoal(self.initial_pose)
+
+        move_base_action = MoveBaseActionGoal()
+        move_base_action.goal = move_base
+        move_base_action.goal.target_pose.header.frame_id = "map"
+        
+        self.goal = move_base_action
+
 
     def useQuaternion(self):
         self.quaternion = Quaternion(
@@ -261,16 +273,18 @@ class Robot:
     def run(self):
         """The control loop of the car."""
 
+        goal_sent = False
         rate = rospy.Rate(2)
 
         while not rospy.is_shutdown():
-            if self.should_go_home:
+            if self.should_go_home and goal_sent == False:
                 rospy.loginfo("Actually going home...")
                 # TODO Go home! In order to do this we need to pusblish on /move_base_simple/goal the inizial position in format PoseStamped.
-                goal_publisher = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size=1)
-                goal_publisher.publish(self.initial_pose)
+                goal_publisher = rospy.Publisher('move_base/goal', MoveBaseActionGoal, queue_size=1)
+                goal_publisher.publish(self.goal)
+                goal_sent = True
             
-            else:
+            elif self.should_go_home == False:
 
 
                 flag = False
@@ -292,8 +306,11 @@ class Robot:
                         break
                 self.stop()
                 print("mi calibro")
+            else:
+                pass
 
             rate.sleep()
+
             
     
 if __name__ == "__main__":
