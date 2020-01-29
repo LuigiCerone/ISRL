@@ -42,6 +42,9 @@ class Robot:
         rospy.Subscriber('/home', String, self.home_callback)
 
         self.compute_initial_pose()
+
+        # self.get_home()
+        # self.prova()
         # self.rotate_by(360, 1)
         # self.start()
 
@@ -55,34 +58,7 @@ class Robot:
         rospy.loginfo("Just received on topic /home the message: {}, I'm going home!".format(msg.data))
         self.should_go_home = True
 
-    def compute_initial_pose(self):
-        # The following should compute the pose, it's commented out beacuse I've used a package to do so.
-        # listener = tf.TransformListener()
-        # pose_stamped = PoseStamped()
-
-        # try:
-        #     now = rospy.Time.now()
-        #     listener.waitForTransform('map', 'base_link', now, rospy.Duration(10.0))
-        #     (bf_trans, bf_rot) = listener.lookupTransform('map', 'base_link', now)
-        #     # [ x, y, z ] [x, y, z, w]
-        #     pose_stamped.header.stamp = rospy.Time.now()
-        #     pose_stamped.header.frame_id = "tf/map"
-
-        #     pose_stamped.pose.position.x = bf_trans[0]
-        #     pose_stamped.pose.position.y = bf_trans[1]
-        #     pose_stamped.pose.position.z = bf_trans[2]
-
-        #     pose_stamped.pose.orientation.x = bf_rot[0]
-        #     pose_stamped.pose.orientation.y = bf_rot[1]
-        #     pose_stamped.pose.orientation.z = bf_rot[2]
-        #     pose_stamped.pose.orientation.w = bf_rot[3]
-
-        #     rospy.loginfo("Initial position: {}".format(pose_stamped.serialize()))
-
-        # except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
-        #     rospy.logerr(e)
-        # self.initial_pose = pose_stamped;
-           
+    def compute_initial_pose(self):           
         self.initial_pose = rospy.wait_for_message('/pose', PoseStamped)
         rospy.loginfo("The default position is: {}".format(self.initial_pose))
 
@@ -93,7 +69,12 @@ class Robot:
         move_base_action = MoveBaseActionGoal()
         move_base_action.goal = move_base
         move_base_action.goal.target_pose.header.frame_id = "map"
-        
+        move_base_action.header.stamp.secs = self.initial_pose.header.stamp.secs
+        move_base_action.header.stamp.nsecs = self.initial_pose.header.stamp.nsecs
+        move_base_action.header.frame_id = "map"
+
+
+
         self.goal = move_base_action
 
 
@@ -269,24 +250,35 @@ class Robot:
                     break
             self.stop()
             print("mi calibro")
+    
+    def prova(self):
+        rospy.loginfo("Actually going home...")
+        goal_publisher = rospy.Publisher('move_base/goal', MoveBaseActionGoal, queue_size=10)
+        goal_publisher.publish(self.goal)
+        goal_sent = True
+        rospy.loginfo("Ho scritto {}".format(self.goal))
 
     def run(self):
         """The control loop of the car."""
 
         goal_sent = False
         rate = rospy.Rate(2)
+        rospy.sleep(2)
 
         while not rospy.is_shutdown():
             if self.should_go_home and goal_sent == False:
                 rospy.loginfo("Actually going home...")
-                # TODO Go home! In order to do this we need to pusblish on /move_base_simple/goal the inizial position in format PoseStamped.
-                goal_publisher = rospy.Publisher('move_base/goal', MoveBaseActionGoal, queue_size=1)
+                goal_publisher = rospy.Publisher('move_base/goal', MoveBaseActionGoal, queue_size=10)
+                
+                # Test.
+                # self.goal.goal.target_pose.pose.position.x = self.home_x
+                # self.goal.goal.target_pose.pose.position.y = self.home_y
+
                 goal_publisher.publish(self.goal)
                 goal_sent = True
+                rospy.loginfo("Ho scritto {}".format(self.goal))
             
             elif self.should_go_home == False:
-
-
                 flag = False
                 sense = self.sense()
                 think = self.think(sense)
