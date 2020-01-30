@@ -43,8 +43,12 @@ class Robot:
 
         self.compute_initial_pose()
 
+        # For debugging only.
+        # rospy.Subscriber('/move_base/goal', MoveBaseActionGoal, self.move_base_callback)
+
         # self.get_home()
-        # self.prova()
+        # TODO Understand why the following is needed.
+        self.prova()
         # self.rotate_by(360, 1)
         # self.start()
 
@@ -57,6 +61,9 @@ class Robot:
     def home_callback(self, msg):
         rospy.loginfo("Just received on topic /home the message: {}, I'm going home!".format(msg.data))
         self.should_go_home = True
+
+    def move_base_callback(self, msg):
+        rospy.loginfo("Eccolo {}".format(msg))
 
     def compute_initial_pose(self):           
         self.initial_pose = rospy.wait_for_message('/pose', PoseStamped)
@@ -268,7 +275,7 @@ class Robot:
         while not rospy.is_shutdown():
             if self.should_go_home and goal_sent == False:
                 rospy.loginfo("Actually going home...")
-                goal_publisher = rospy.Publisher('move_base/goal', MoveBaseActionGoal, queue_size=10)
+                goal_publisher = rospy.Publisher('/move_base/goal', MoveBaseActionGoal, queue_size=1)
                 
                 # Test.
                 # self.goal.goal.target_pose.pose.position.x = self.home_x
