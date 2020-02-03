@@ -21,7 +21,7 @@
     <!--Gazebo empty worlds launch file-->
       <include file="$(find gazebo_ros)/launch/empty_world.launch">
 <!--    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.worlds"/> -->
-    <arg name="world_name" value="$(find mio_robot)/worlds/world_home1.world"/>
+    <arg name="world_name" value="$(find mio_robot)/worlds/walled_room_with_obstacles.world"/>
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>

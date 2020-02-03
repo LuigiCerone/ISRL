@@ -4,7 +4,7 @@
           type="robot.py"
           respawn="false"
           output="screen">
-          <param name="prolog" value="$(find controller)/src/behaviour_else_empty.pl"/>
+          <param name="prolog" value="$(find controller)/src/behaviour2.pl"/>
      </node>
      <node
           name="pose_publisher"
