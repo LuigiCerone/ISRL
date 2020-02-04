@@ -24,6 +24,9 @@ cd ~/catkin_ws/src
 git clone https://github.com/yzrobot/pose_publisher
 cd .. 
 catkin_make
-
 Il comando per da riga di comando per far tornare a casa il robot è
-rostopic pub /home std_msgs/String 'ciao'
+
+
+
+
+rostopic pub /home std_msgs/String 'go home'
