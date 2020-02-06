@@ -1,22 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-    <node name="twist_to_motors" pkg="raspberry_car" type="twist_to_motors.py"
-          output="screen"/>
+    <!--    <node name="twist_to_motors" pkg="raspberry_car" type="twist_to_motors.py"-->
+    <!--          output="screen"/>-->
 
-   <node name="raspberry_car"
+    <node name="raspberry_car_motors"
           pkg="raspberry_car"
           type="motors.py"
           respawn="false"
           output="screen" >
     </node>
 
-    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py"
-          output="screen"/>
+    <!--    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py"-->
+    <!--          output="screen"/>-->
 
-   <node name="raspberry_car"
+    <node name="raspberry_car_encoders"
           pkg="raspberry_car"
           type="encoders.py"
           respawn="false"
           output="screen">
     </node>
+
+    <node name="ydlidar_node"  pkg="ydlidar"  type="ydlidar_node" output="screen" respawn="false" >
+        <param name="port"         type="string" value="/dev/ttyUSB0"/>
+        <param name="baudrate"     type="int"    value="115200"/>
+        <param name="frame_id"     type="string" value="sensor_laser"/>
+        <param name="low_exposure"  type="bool"   value="false"/>
+        <param name="resolution_fixed"    type="bool"   value="true"/>
+        <param name="auto_reconnect"    type="bool"   value="true"/>
+        <param name="reversion"    type="bool"   value="false"/>
+        <param name="angle_min"    type="double" value="-180" />
+        <param name="angle_max"    type="double" value="180" />
+        <param name="range_min"    type="double" value="0.12" />
+        <param name="range_max"    type="double" value="3.5" />
+        <param name="ignore_array" type="string" value="" />
+        <param name="samp_rate"    type="int"    value="9"/>
+        <param name="frequency"    type="double" value="7"/>
+    </node>
+    <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser4"
+          args="0.2245 0.0 0.2 0.0 0.0  0.0 /base_link /sensor_laser 40" />
+
+    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py" output="screen"/>
+
 </launch>

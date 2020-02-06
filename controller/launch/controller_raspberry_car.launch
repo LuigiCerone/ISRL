@@ -1,0 +1,19 @@
+<launch>
+     <node name="controller"
+          pkg="controller"
+          type="robot.py"
+          respawn="false"
+          output="screen">
+          <param name="prolog" value="$(find controller)/src/behaviour_else_empty.pl"/>
+     </node>
+
+    <node
+            name="pose_publisher"
+            pkg="pose_publisher"
+            type="pose_publisher"
+            output="screen">
+    </node>
+
+    <node name="twist_to_motors" pkg="raspberry_car" type="twist_to_motors.py" output="screen"/>
+<!--    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py" output="screen"/>-->
+</launch>

@@ -19,7 +19,7 @@ class Robot:
         self.home_x = None
         self.home_y = None
 
-        self.DISTANCE_THRESHOLD = .3 # what is the unit measure?
+        self.DISTANCE_THRESHOLD = 100
 
         # TODO Check if this is useful, in the previous hw this was used to avoid a bug with prothonics.
         self.previous_decision = None
@@ -47,8 +47,7 @@ class Robot:
         # rospy.Subscriber('/move_base/goal', MoveBaseActionGoal, self.move_base_callback)
 
         # self.get_home()
-        # TODO Understand why the following is needed.
-        self.prova()
+        self.init()
         # self.rotate_by(360, 1)
         # self.start()
 
@@ -256,7 +255,7 @@ class Robot:
             self.stop()
             print("mi calibro")
     
-    def prova(self):
+    def init(self):
         rospy.loginfo("Actually going home...")
         goal_publisher = rospy.Publisher('move_base/goal', MoveBaseActionGoal, queue_size=10)
         goal_publisher.publish(self.goal)

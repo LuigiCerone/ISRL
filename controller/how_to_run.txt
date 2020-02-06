@@ -19,9 +19,11 @@ roslaunch raspberry_car raspberry_car.launch
 
 
 Scaricare da qui il package pose_publisher: https://github.com/yzrobot/pose_publisher
+Da qui quello per il laser: https://github.com/EAIBOT/ydlidar.git
 I comandi da dare sono:
 cd ~/catkin_ws/src
 git clone https://github.com/yzrobot/pose_publisher
+git clone https://github.com/EAIBOT/ydlidar.git
 cd .. 
 catkin_make
 
