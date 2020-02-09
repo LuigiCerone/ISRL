@@ -64,8 +64,8 @@ class Driver:
         # self._last_received = rospy.get_time()
         # self._timeout = rospy.get_param('~timeout', 2)
         self._rate = rospy.get_param('~rate', 5)
-        self._max_speed = rospy.get_param('~max_speed', 2)
-        self._wheel_base = rospy.get_param('~wheel_base', 0.091)
+        self._max_speed = rospy.get_param('~max_speed', 0.3)
+        self._wheel_base = rospy.get_param('~wheel_base', 0.13)
 
         # Assign pins to motors.
         GPIO.setup(18, GPIO.IN, GPIO.PUD_UP)

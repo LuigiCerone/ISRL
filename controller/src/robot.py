@@ -127,14 +127,14 @@ class Robot:
         view['North'] = False  # In prothonics' logic False means there isn't an obstacle.
         count = 0
 
-        t = 20
+        t = 50
         # 90.
         for angle in range(0, 40):
             if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
                     self.laserscan.ranges[(719 - angle) % 719] <= self.DISTANCE_THRESHOLD:
                 count += 1
 
-        if count >= 10:
+        if count >= (t/2):
             view['North'] = True
 
         count = 0
@@ -190,18 +190,19 @@ class Robot:
             command.angular.z = 0.0
 
         if direction == 'West':
-            self.rotate_by(89, 20.0)
-            # self.rotate(90, 100.0)
+            # self.rotate_by(89, 20.0)
+            self.rotate(89, 20.0)
             # self.rotate_with_nav_stack(90)
             command.linear.x = 2.0
 
         if direction == 'South':
-            self.rotate_by(179, 20.0)
-            # self.rotate(2.0, 180)
+            # self.rotate_by(179, 20.0)
+            self.rotate(179, 20.0)
             command.linear.x = 2.0
 
         if direction == 'East':
-            self.rotate_by(270, 20.0)
+            # self.rotate_by(270, 20.0)
+            self.rotate(269, 20.0)
             command.linear.x = 2.0
 
         self.velocity_publisher.publish(command)
@@ -231,37 +232,38 @@ class Robot:
 
         goal_publisher.publish(move_base_action)
 
-    # def rotate(self, angle, speed, clockwise=True):
-    #     vel_msg = Twist()
-    #
-    #     # Converting from angles to radians
-    #     angular_speed = speed * 2 * PI / 360
-    #     relative_angle = angle * 2 * PI / 360
-    #
-    #     # We wont use linear components
-    #     vel_msg.linear.x = 0
-    #     vel_msg.linear.y = 0
-    #     vel_msg.linear.z = 0
-    #     vel_msg.angular.x = 0
-    #     vel_msg.angular.y = 0
-    #     # Checking if our movement is CW or CCW
-    #
-    #     if clockwise:
-    #         vel_msg.angular.z = -abs(angular_speed)
-    #     else:
-    #         vel_msg.angular.z = abs(angular_speed)
-    #     # Setting the current time for distance calculus
-    #
-    #     t0 = rospy.Time.now().to_sec()
-    #     current_angle = 0
-    #     while current_angle < relative_angle:
-    #         self.velocity_publisher.publish(vel_msg)
-    #         t1 = rospy.Time.now().to_sec()
-    #         current_angle = angular_speed * (t1 - t0)
-    #
-    #     # Forcing our robot to stop
-    #     vel_msg.angular.z = 0
-    #     self.velocity_publisher.publish(vel_msg)
+    def rotate(self, angle, speed, clockwise=False):
+        vel_msg = Twist()
+
+        # Converting from angles to radians
+        # angular_speed = speed * 2 * PI / 360
+        angular_speed = speed
+        relative_angle = angle * 2 * PI / 360
+
+        # We wont use linear components
+        vel_msg.linear.x = 0
+        vel_msg.linear.y = 0
+        vel_msg.linear.z = 0
+        vel_msg.angular.x = 0
+        vel_msg.angular.y = 0
+        # Checking if our movement is CW or CCW
+
+        if clockwise:
+            vel_msg.angular.z = -abs(angular_speed)
+        else:
+            vel_msg.angular.z = abs(angular_speed)
+        # Setting the current time for distance calculus
+
+        t0 = rospy.Time.now().to_sec()
+        current_angle = 0
+        self.velocity_publisher.publish(vel_msg)
+        while current_angle < relative_angle:
+            t1 = rospy.Time.now().to_sec()
+            current_angle = angular_speed * (t1 - t0)
+
+        # Forcing our robot to stop.
+        vel_msg.angular.z = 0
+        self.velocity_publisher.publish(vel_msg)
 
     def init(self):
         rospy.loginfo(":::INIT:::")
