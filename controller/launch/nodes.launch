@@ -63,6 +63,15 @@
       <node pkg="tf" type="static_transform_publisher" name="base_footprint_to_base_link"
     args="0 0.0 0 0.0 0.0  0.0 /base_footprint /base_link 40" />
 
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find mio_robot)/urdf/mio_robot.xacro"/>
+
+    <node name="twist_to_motors" pkg="raspberry_car" type="twist_to_motors.py" output="screen"/>
+
+    <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter">
+        <rosparam command="load" file="$(find controller)/param/filter_conf.yaml" />
+        <remap from="scan" to="scan" />
+    </node>
+
     <!-- rviz -->
     <group if="$(arg open_rviz)">
         <node pkg="rviz" type="rviz" name="rviz" required="true"/>

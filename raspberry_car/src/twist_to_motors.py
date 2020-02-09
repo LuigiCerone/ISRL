@@ -47,6 +47,9 @@ class TwistToMotors():
         self.left = 0
         self.right = 0
 
+        self.prev_left = 0
+        self.prev_right = 0
+
     #############################################################
     def spin(self):
         #############################################################
@@ -73,10 +76,18 @@ class TwistToMotors():
 
         self.right = 1.0 * self.dx + self.dr * self.w / 2
         self.left = 1.0 * self.dx - self.dr * self.w / 2
-        # rospy.loginfo("publishing: (%d, %d)", left, right)
+        # rospy.loginfo("publishing: (%d, %d)", self.left, self.right)
 
-        self.pub_lmotor.publish(self.left)
-        self.pub_rmotor.publish(self.right)
+        if self.prev_left != round(self.left, 4):
+            self.pub_lmotor.publish(self.left)
+            self.prev_left = round(self.left, 4)
+
+        if self.prev_right != round(self.right, 4):
+            self.pub_rmotor.publish(self.right)
+            self.prev_right = round(self.right, 4)
+
+        # self.pub_lmotor.publish(self.left)
+        # self.pub_rmotor.publish(self.right)
 
         self.ticks_since_target += 1
 

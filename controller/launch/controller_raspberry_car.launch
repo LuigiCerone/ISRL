@@ -13,7 +13,5 @@
             type="pose_publisher"
             output="screen">
     </node>
-
-    <node name="twist_to_motors" pkg="raspberry_car" type="twist_to_motors.py" output="screen"/>
 <!--    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py" output="screen"/>-->
 </launch>

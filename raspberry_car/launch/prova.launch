@@ -1,24 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-    <!--    <node name="twist_to_motors" pkg="raspberry_car" type="twist_to_motors.py"-->
-    <!--          output="screen"/>-->
-
-    <node name="raspberry_car_motors"
-          pkg="raspberry_car"
-          type="motors.py"
-          respawn="false"
-          output="screen" >
-    </node>
-
-    <!--    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py"-->
-    <!--          output="screen"/>-->
-
-    <node name="raspberry_car_encoders"
-          pkg="raspberry_car"
-          type="encoders.py"
-          respawn="false"
-          output="screen">
-    </node>
 
     <node name="ydlidar_node"  pkg="ydlidar_ros"  type="ydlidar_node" output="screen" respawn="false" >
         <param name="port"         type="string" value="/dev/ttyUSB0"/>
@@ -38,7 +19,5 @@
 
     <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser4"
           args="0.2245 0.0 0.2 0.0 0.0  0.0 /base_link /sensor_laser 40" />
-
-    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py" output="screen"/>
 
 </launch>

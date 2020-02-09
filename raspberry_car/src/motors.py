@@ -39,7 +39,7 @@ class Motor:
     def move(self, speed_percent):
         speed = _clip(abs(speed_percent), 0, 100)
 
-        rospy.loginfo("speed: {}; speed_percent: {}".format(speed, speed_percent))
+        # rospy.loginfo("speed: {}; speed_percent: {}".format(speed, speed_percent))
 
         # Positive speeds move wheels forward, negative speeds
         # move wheels backward
@@ -64,7 +64,7 @@ class Driver:
         # self._last_received = rospy.get_time()
         # self._timeout = rospy.get_param('~timeout', 2)
         self._rate = rospy.get_param('~rate', 5)
-        self._max_speed = rospy.get_param('~max_speed', 10)
+        self._max_speed = rospy.get_param('~max_speed', 2)
         self._wheel_base = rospy.get_param('~wheel_base', 0.091)
 
         # Assign pins to motors.
@@ -75,7 +75,6 @@ class Driver:
         self._right_speed_percent = 0
 
         # Setup subscriber for velocity messages.
-        rospy.Subscriber('rwheel_vtarget', Float32, self.right_wheel_velocity_callback)
         rospy.Subscriber('lwheel_vtarget', Float32, self.left_wheel_velocity_callback)
 
     def right_wheel_velocity_callback(self, message_speed):
