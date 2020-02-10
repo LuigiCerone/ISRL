@@ -107,9 +107,8 @@ class Robot:
         while abs(round((round(starting_rad + abs(degree) % 360, 5) - abs(round(self.useQuaternion() % 360, 5))) % 360,
                         5)) \
                 > 2:
-            print("differenza: {}".format(abs(round((round(starting_rad + abs(degree) % 360, 5) - abs(round(self.useQuaternion() % 360, 5))) % 360,
-                        5))))
-            print("devo andare {}".format(abs(round((round(starting_rad + abs(degree) % 360, 5))))))
+            # print("differenza: {}".format(abs(round((round(starting_rad + abs(degree) % 360, 5) - abs(round(self.useQuaternion() % 360, 5))) % 360,           5))))
+            # print("devo andare {}".format(abs(round((round(starting_rad + abs(degree) % 360, 5))))))
             print("attuale. {}".format(abs(round(self.useQuaternion() % 360, 5)) % 360))
             self.velocity_publisher.publish(command)
 
@@ -167,7 +166,7 @@ class Robot:
         if count >= t:
             view['East'] = True
 
-        # print(view)
+        print(view)
         return view
 
     def think(self, view):
@@ -271,6 +270,30 @@ class Robot:
         goal_publisher.publish(self.goal)
         rospy.loginfo("Ho scritto {}".format(self.goal))
 
+    def go_north(self):
+        flag = False
+        count = 0
+        while True:
+            # self.prothonics.useBrain().useMemory().putNewFact("position({},{}).".format(
+            # self.odometry.pose.pose.position.x, self.odometry.pose.pose.position.y))
+            for angle in range(0, 40):
+                if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
+                        self.laserscan.ranges[(719 - angle) % 719] <= self.DISTANCE_THRESHOLD:
+                    count += 1
+
+            if count >= 25:
+                flag = True
+
+            # for angle in range(0, 45):
+            #     if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
+            #             self.laserscan.ranges[(360 - angle) % 360] <= self.DISTANCE_THRESHOLD:
+            #         flag = True
+            #         break
+            if flag:
+                break
+        self.stop()
+        print("Can't go north anymore...")
+
     def run(self):
         """The control loop of the car."""
 
@@ -290,32 +313,27 @@ class Robot:
 
             elif not self.should_go_home:
                 # flag = False
-                sense = self.sense()
-                if sense != self.previous_sense:
-                    print(sense)
-                    self.previous_sense = sense
-                    think = self.think(sense)
-                    # think = 'North'
-                    if think is not None:
-                        # print("vado a {}".format(think))
-                        self.act(think)
-                    else:
-                        break
-                else:
-                    # print('come prima')
-                    continue
-                # while True:
-                #     self.prothonics.useBrain().useMemory().putNewFact("position({},{}).".format(
-                #         self.odometry.pose.pose.position.x, self.odometry.pose.pose.position.y))
-                #     for angle in range(0, 45):
-                #         if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
-                #                 self.laserscan.ranges[(360 - angle) % 360] <= self.DISTANCE_THRESHOLD:
-                #             flag = True
-                #             break
-                #     if flag:
+                # sense = self.sense()
+                # if sense != self.previous_sense:
+                #     print(sense)
+                #     self.previous_sense = sense
+                #     think = self.think(sense)
+                #     # think = 'North'
+                #     if think is not None:
+                #         # print("vado a {}".format(think))
+                #         self.act(think)
+                #     else:
                 #         break
-                # self.stop()
-                # print("mi calibro")
+                # else:
+                #     # print('come prima')
+                #     continue
+                sense = self.sense()
+                think = self.think(sense)
+                if think is not None:
+                    self.act(think)
+                else:
+                    break
+                self.go_north()
             else:
                 pass
 
