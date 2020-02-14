@@ -10,8 +10,7 @@ import tf
 from geometry_msgs.msg import Quaternion
 from sensor_msgs.msg import LaserScan
 import prothonics
-
-PI = 3.1415926535897
+import time
 
 
 class Robot:
@@ -21,7 +20,7 @@ class Robot:
         self.home_x = None
         self.home_y = None
 
-        self.DISTANCE_THRESHOLD = 0.2
+        self.DISTANCE_THRESHOLD = 0.3
 
         # TODO Check if this is useful, in the previous hw this was used to avoid a bug with prothonics.
         self.previous_decision = None
@@ -190,46 +189,43 @@ class Robot:
 
         if direction == 'West':
             # self.rotate_by(89, 20.0)
-            self.rotate(89, 20.0)
-            # self.rotate_with_nav_stack(90)
+            # self.rotate(89, 20.0)
+            self.rotate_with_delay(0.4, 20.0)
             command.linear.x = 2.0
 
         if direction == 'South':
             # self.rotate_by(179, 20.0)
-            self.rotate(179, 20.0)
-            command.linear.x = 2.0
-
+            # self.rotate(179, 20.0)
+            # self.rotate_with_delay(180, 20.0)
+            # command.linear.x = 2.0
+            pass
         if direction == 'East':
             # self.rotate_by(270, 20.0)
-            self.rotate(269, 20.0)
-            command.linear.x = 2.0
+            # self.rotate(269, 20.0)
+            pass
+            # command.linear.x = 2.0
+            # self.rotate_with_delay(1, 20.0)
 
         self.velocity_publisher.publish(command)
 
-    def rotate_with_nav_stack(self, degree):
-        self.stop()
+    def rotate_with_delay(self, delay, speed):
+        vel_msg = Twist()
 
-        goal_publisher = rospy.Publisher('/move_base/goal', MoveBaseActionGoal, queue_size=10)
+        # We wont use linear components.
+        vel_msg.linear.x = 0
+        vel_msg.linear.y = 0
+        vel_msg.linear.z = 0
+        vel_msg.angular.x = 0
+        vel_msg.angular.y = 0
+        vel_msg.angular.z = abs(speed)
 
-        move_base = MoveBaseGoal()
+        self.velocity_publisher.publish(vel_msg)
+        # time.sleep(0.24)
+        time.sleep(delay)
 
-        val = tf.transformations.quaternion_from_euler(0, 0, degree)
-        quat = Quaternion(
-            x=val[0],
-            y=val[1],
-            z=val[2],
-            w=val[3]
-        )
-        move_base.target_pose.pose.orientation = quat
-        move_base_action = MoveBaseActionGoal()
-
-        move_base_action.goal = move_base
-        move_base_action.goal.target_pose.header.frame_id = "map"
-        # move_base_action.header.stamp.secs = self.initial_pose.header.stamp.secs
-        # move_base_action.header.stamp.nsecs = self.initial_pose.header.stamp.nsecs
-        move_base_action.header.frame_id = "map"
-
-        goal_publisher.publish(move_base_action)
+        vel_msg.angular.z = 0
+        self.velocity_publisher.publish(vel_msg)
+        # time.sleep(4)
 
     def rotate(self, angle, speed, clockwise=False):
         vel_msg = Twist()
