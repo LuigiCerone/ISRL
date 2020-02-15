@@ -63,6 +63,7 @@
   <link name="base_link">
     <xacro:box_inertia m="10" w="${base_len}" h="${base_width}" d="0.01"/>
     <visual>
+      <origin xyz="0 0 0.03" rpy="0 0 0" />
       <geometry>
         <box size="${base_len} ${base_width} 0.01"/>
       </geometry>
@@ -86,7 +87,7 @@
   <xacro:macro name="wheel" params="prefix reflect">
     <link name="${prefix}_wheel">
       <visual>
-        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <origin xyz="0 0 0.032" rpy="${pi/2} 0 0"/>
         <geometry>
           <cylinder radius="${wheel_radius}" length="0.005"/>
         </geometry>
@@ -172,6 +173,6 @@
     <child link="sensor_laser" />
   </joint>
 
-  <xacro:include filename="$(find mio_robot)/urdf/mio_robot_gazebo_plugins.xacro"/>
+<!--  <xacro:include filename="$(find mio_robot)/urdf/mio_robot_gazebo_plugins.xacro"/>-->
 
 </robot>

@@ -5,7 +5,7 @@
 
     <node name="raspberry_car_motors"
           pkg="raspberry_car"
-          type="motors.py"
+          type="motors_v2.py"
           respawn="false"
           output="screen" >
     </node>
@@ -37,8 +37,8 @@
     </node>
 
     <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser4"
-          args="0.2245 0.0 0.2 0.0 0.0  0.0 /base_link /sensor_laser 40" />
+          args="-0.08 0.0 0.04 0.0 0.0  0.0 /base_link /sensor_laser 40" />
 
-    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py" output="screen"/>
+<!--    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py" output="screen"/>-->
 
 </launch>

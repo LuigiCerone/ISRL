@@ -74,8 +74,8 @@ class DiffTf:
         #### parameters #######
         self.rate = rospy.get_param('~rate', 10.0)  # the rate at which to publish the transform
         self.ticks_meter = float(
-            rospy.get_param('ticks_meter', 50))  # The number of wheel encoder ticks per meter of travel
-        self.base_width = float(rospy.get_param('~base_width', 0.245))  # The wheel base width in meters
+            rospy.get_param('ticks_meter', 58))  # The number of wheel encoder ticks per meter of travel
+        self.base_width = float(rospy.get_param('~base_width', 0.1))  # The wheel base width in meters
 
         self.base_frame_id = rospy.get_param('~base_frame_id', 'base_footprint')  # the name of the base frame of the robot
         self.odom_frame_id = rospy.get_param('~odom_frame_id', 'odom')  # the name of the odometry reference frame
@@ -156,6 +156,9 @@ class DiffTf:
                 self.y = self.y + (sin(self.th) * x + cos(self.th) * y)
             if (th != 0):
                 self.th = self.th + th
+
+            # Quaternione che esprime 180 gradi di yaw.
+            # array([-0., 0., 0.89399666, -0.44807362])
 
             # publish the odom information
             quaternion = Quaternion()

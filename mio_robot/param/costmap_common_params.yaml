@@ -1,6 +1,6 @@
 # Customized for ArloBot
 max_obstacle_height: 0.60  # assume something like an arm is mounted on top of the robot
-obstacle_range: 0.5
+obstacle_range: 0.8
 raytrace_range: 3.0
 
 # Obstacle Cost Shaping (http://wiki.ros.org/costmap_2d/hydro/inflation)
