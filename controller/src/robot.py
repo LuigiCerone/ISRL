@@ -125,9 +125,11 @@ class Robot:
         view['North'] = False  # In prothonics' logic False means there isn't an obstacle.
         count = 0
 
-        t = 50
+        t = 70
+        # t = 50
         # 90.
-        for angle in range(0, 40):
+        for angle in range(0, 90):
+        # for angle in range(0, 40):
             if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
                     self.laserscan.ranges[(719 - angle) % 719] <= self.DISTANCE_THRESHOLD:
                 count += 1
@@ -137,8 +139,8 @@ class Robot:
 
         count = 0
         view['West'] = False
-        # for angle in range(90, 270):
-        for angle in range(140, 220):
+        for angle in range(90, 270):
+        # for angle in range(140, 220):
             if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD:
                 count += 1
 
@@ -147,8 +149,8 @@ class Robot:
 
         view['South'] = False
         count = 0
-        # for angle in range(270, 450):
-        for angle in range(320, 400):
+        for angle in range(270, 450):
+        # for angle in range(320, 400):
             if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD:
                 count += 1
 
@@ -157,8 +159,8 @@ class Robot:
 
         view['East'] = False
         count = 0
-        # for angle in range(450, 630):
-        for angle in range(500, 580):
+        for angle in range(450, 630):
+        # for angle in range(500, 580):
             if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD:
                 count += 1
 
@@ -184,14 +186,14 @@ class Robot:
         command = Twist()
 
         if direction == 'North':
-            command.linear.x = 2.0
+            command.linear.x = 1.0
             command.angular.z = 0.0
 
         if direction == 'West':
             # self.rotate_by(89, 20.0)
             # self.rotate(89, 20.0)
             self.rotate_with_delay(0.4, 20.0)
-            command.linear.x = 2.0
+            command.linear.x = 1.0
 
         if direction == 'South':
             # self.rotate_by(179, 20.0)
