@@ -122,40 +122,41 @@ class Robot:
     def sense(self):
         # In self.laserscan we have the reading of laser sensor.
         view = dict()
-        view['North'] = False  # In prothonics' logic False means there isn't an obstacle.
+
+        view['South'] = False  # In prothonics' logic False means there isn't an obstacle.
         count = 0
 
         t = 70
         # t = 50
         # 90.
-        for angle in range(0, 90):
-        # for angle in range(0, 40):
+        # for angle in range(0, 90):
+        for angle in range(0, 40):
             if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
                     self.laserscan.ranges[(719 - angle) % 719] <= self.DISTANCE_THRESHOLD:
                 count += 1
 
         if count >= (t/2):
-            view['North'] = True
+            view['South'] = True
 
         count = 0
         view['West'] = False
-        for angle in range(90, 270):
-        # for angle in range(140, 220):
+        # for angle in range(90, 270):
+        for angle in range(140, 220):
             if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD:
                 count += 1
 
         if count >= t:
             view['West'] = True
 
-        view['South'] = False
+        view['North'] = False
         count = 0
-        for angle in range(270, 450):
-        # for angle in range(320, 400):
+        # for angle in range(270, 450):
+        for angle in range(320, 400):
             if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD:
                 count += 1
 
         if count >= t:
-            view['South'] = True
+            view['North'] = True
 
         view['East'] = False
         count = 0
@@ -191,22 +192,18 @@ class Robot:
 
         if direction == 'West':
             # self.rotate_by(89, 20.0)
-            # self.rotate(89, 20.0)
             self.rotate_with_delay(0.4, 20.0)
             command.linear.x = 1.0
 
         if direction == 'South':
             # self.rotate_by(179, 20.0)
-            # self.rotate(179, 20.0)
-            # self.rotate_with_delay(180, 20.0)
-            # command.linear.x = 2.0
+            self.rotate_with_delay(0.8, 20.0)
+            command.linear.x = 1.0
             pass
         if direction == 'East':
             # self.rotate_by(270, 20.0)
-            # self.rotate(269, 20.0)
-            pass
-            # command.linear.x = 2.0
-            # self.rotate_with_delay(1, 20.0)
+            self.rotate_with_delay(1.0, 20.0)
+            command.linear.x = 1.0
 
         self.velocity_publisher.publish(command)
 
@@ -272,21 +269,13 @@ class Robot:
         flag = False
         count = 0
         while True:
-            # self.prothonics.useBrain().useMemory().putNewFact("position({},{}).".format(
-            # self.odometry.pose.pose.position.x, self.odometry.pose.pose.position.y))
-            for angle in range(0, 40):
-                if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
-                        self.laserscan.ranges[(719 - angle) % 719] <= self.DISTANCE_THRESHOLD:
+            for angle in range(320, 400):
+                if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD:
                     count += 1
 
-            if count >= 25:
+            if count >= 70:
                 flag = True
 
-            # for angle in range(0, 45):
-            #     if self.laserscan.ranges[angle] <= self.DISTANCE_THRESHOLD or \
-            #             self.laserscan.ranges[(360 - angle) % 360] <= self.DISTANCE_THRESHOLD:
-            #         flag = True
-            #         break
             if flag:
                 break
         self.stop()
@@ -307,24 +296,9 @@ class Robot:
                 goal_publisher.publish(self.goal)
                 goal_sent = True
                 self.should_go_home = True
-                rospy.loginfo("Ho scritto {}".format(self.goal))
+                rospy.loginfo("Going to {}".format(self.goal))
 
             elif not self.should_go_home:
-                # flag = False
-                # sense = self.sense()
-                # if sense != self.previous_sense:
-                #     print(sense)
-                #     self.previous_sense = sense
-                #     think = self.think(sense)
-                #     # think = 'North'
-                #     if think is not None:
-                #         # print("vado a {}".format(think))
-                #         self.act(think)
-                #     else:
-                #         break
-                # else:
-                #     # print('come prima')
-                #     continue
                 sense = self.sense()
                 think = self.think(sense)
                 if think is not None:

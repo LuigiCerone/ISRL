@@ -63,7 +63,7 @@
   <link name="base_link">
     <xacro:box_inertia m="10" w="${base_len}" h="${base_width}" d="0.01"/>
     <visual>
-      <origin xyz="0 0 0.03" rpy="0 0 0" />
+      <origin xyz="0 0 0.03" rpy="-${pi} 0 ${pi}" />
       <geometry>
         <box size="${base_len} ${base_width} 0.01"/>
       </geometry>
@@ -78,7 +78,7 @@
 
   <!--base_link to base_footprint Joint-->
   <joint name="base_link_joint" type="fixed">
-    <origin xyz="0 0 ${wheel_radius + 0.005}" rpy="0 0 0" />
+    <origin xyz="0 0 ${wheel_radius + 0.005}" rpy="-${pi} 0 ${pi}" />
     <parent link="base_footprint"/>
     <child link="base_link" />
   </joint>

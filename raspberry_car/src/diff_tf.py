@@ -101,7 +101,8 @@ class DiffTf:
         self.prev_rencoder = 0
         self.x = 0  # position in xy plane
         self.y = 0
-        self.th = 0
+        self.th = pi
+        # self.th = 0
         self.dx = 0  # speeds in x/rotation
         self.dr = 0
         self.then = rospy.Time.now()
@@ -156,9 +157,6 @@ class DiffTf:
                 self.y = self.y + (sin(self.th) * x + cos(self.th) * y)
             if (th != 0):
                 self.th = self.th + th
-
-            # Quaternione che esprime 180 gradi di yaw.
-            # array([-0., 0., 0.89399666, -0.44807362])
 
             # publish the odom information
             quaternion = Quaternion()
