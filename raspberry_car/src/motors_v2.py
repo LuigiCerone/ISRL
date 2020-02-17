@@ -43,6 +43,10 @@ class Motor:
             GPIO.output(self._motor_pin_1, GPIO.HIGH)
             GPIO.output(self._motor_pin_2, GPIO.LOW)
             GPIO.output(self._activation_pin, GPIO.HIGH)
+        elif speed_percent == -1.0:
+            GPIO.output(self._motor_pin_1, GPIO.LOW)
+            GPIO.output(self._motor_pin_2, GPIO.HIGH)
+            GPIO.output(self._activation_pin, GPIO.HIGH)
         else:
             GPIO.output(self._motor_pin_1, GPIO.LOW)
             GPIO.output(self._motor_pin_2, GPIO.LOW)

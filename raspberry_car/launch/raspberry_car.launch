@@ -37,7 +37,7 @@
     </node>
 
     <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser4"
-          args="-0.08 0.0 0.04 0.0 0.0  0.0 /base_link /sensor_laser 40" />
+          args="0.08 0.0 0.04 0.0 0.0  0.0 /base_link /sensor_laser 40" />
 
 <!--    <node name="diff_tf" pkg="raspberry_car" type="diff_tf.py" output="screen"/>-->
 
