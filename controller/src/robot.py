@@ -78,9 +78,8 @@ class Robot:
         move_base_action.header.stamp.secs = self.initial_pose.header.stamp.secs
         move_base_action.header.stamp.nsecs = self.initial_pose.header.stamp.nsecs
         move_base_action.header.frame_id = "map"
-        
-        self.goal = move_base_action
 
+        self.goal = move_base_action
 
     def useQuaternion(self):
         self.quaternion = Quaternion(
@@ -198,15 +197,15 @@ class Robot:
             command.angular.z = 0.0
 
         if direction == 'West':
-            self.rotate_by(89, 0.25)
+            self.rotate_by(89, 0.2)
             command.linear.x = 0.3
 
         if direction == 'South':
-            self.rotate_by(179, 0.25)
+            self.rotate_by(179, 0.2)
             command.linear.x = 0.3
 
         if direction == 'East':
-           self.rotate_by(269, 0.25)
+           self.rotate_by(269, 0.2)
            command.linear.x = 0.3
 
         self.velocity_publisher.publish(command)
