@@ -19,7 +19,7 @@ class Robot:
         self.home_x = None
         self.home_y = None
 
-        self.DISTANCE_THRESHOLD = 100
+        self.DISTANCE_THRESHOLD = .3
 
         # TODO Check if this is useful, in the previous hw this was used to avoid a bug with prothonics.
         self.previous_decision = None
